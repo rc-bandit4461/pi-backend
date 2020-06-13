@@ -30,6 +30,7 @@ public class EtudiantSession implements Serializable {
     @MapsId("session_id")
     @JoinColumn(name = "session_id")
     Session session;
+    private boolean is_passed = false;
     @Column(updatable = false,name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
