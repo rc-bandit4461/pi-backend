@@ -39,7 +39,7 @@ public class FiliereController {
     @Transactional
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public Filiere save2(@RequestBody Filiere filiere) throws ResponseStatusException {
+    public void save2(@RequestBody Filiere filiere) throws ResponseStatusException {
         System.out.println(filiere.toString());
         int i = 1;
 
@@ -58,14 +58,14 @@ public class FiliereController {
         System.out.println("Before Saving");
         filiereRepository.save(filiere);
 
-        return null;
+
     }
 
     @PutMapping(value = "/editFiliere/{id}")
     @Transactional
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public Filiere edit(@PathVariable(name = "id") Long id, @RequestBody Filiere filiere) {
+    public void edit(@PathVariable(name = "id") Long id, @RequestBody Filiere filiere) {
         int i = 1;
         Filiere filiere1 = filiereRepository.getOne(id);
         filiere1.setLibelle(filiere.getLibelle());
@@ -87,20 +87,12 @@ public class FiliereController {
         }
 
         filiereRepository.save(filiere1);
-        return null;
+
 
     }
-
-    @GetMapping(value = "/test")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
-    public Filiere test() {
-        return null;
-    }
-
     @DeleteMapping(value = "/deleteFiliere/{id}")
     @ResponseBody
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable(name = "id") Long id) throws ResponseStatusException {
         filiereRepository.deleteById(id);
 
