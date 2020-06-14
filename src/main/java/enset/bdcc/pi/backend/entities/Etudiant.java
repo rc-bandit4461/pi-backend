@@ -29,12 +29,11 @@ public class Etudiant implements Serializable {
     protected String prenom;
     protected String password;
 
-    @OneToMany(mappedBy = "etudiant",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "etudiant", fetch = FetchType.EAGER)
     private List<Reclamation> reclamationList = new ArrayList<>();
 
 
-
-    @Column(updatable = false,name = "created_at")
+    @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
     @UpdateTimestamp
@@ -42,8 +41,7 @@ public class Etudiant implements Serializable {
     private Date updatedAt; // initialize updated date
 
 
-
-    public Etudiant(String cin, String nom, String prenom) {
+    public Etudiant(String cin, String prenom, String nom) {
         this.cin = cin;
         this.nom = nom;
         this.prenom = prenom;
