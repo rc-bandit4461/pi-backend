@@ -42,7 +42,7 @@ public class NoteElementModule implements Serializable {
     @ManyToOne
     @JoinColumn(name = "element_id")
     private Element element;
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "noteElementModule")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "noteElementModule",cascade = CascadeType.ALL)
     private List<Examen> examenList = new ArrayList<>();
 
     @Column(name = "note_normale")

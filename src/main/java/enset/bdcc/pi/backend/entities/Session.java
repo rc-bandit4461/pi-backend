@@ -30,6 +30,7 @@ public class Session implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "filiere_id")
     private Filiere filiere;
+    private boolean is_done = false;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "session",cascade = CascadeType.REMOVE)
     private List<Reclamation> reclamationList;
     @Column(updatable = false, name = "created_at")

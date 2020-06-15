@@ -1,10 +1,7 @@
 package enset.bdcc.pi.backend.entities;
 
 import enset.bdcc.pi.backend.entities.SemestreEtudiant;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,7 +16,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+
 @ToString
 public class NoteModule implements Serializable {
 
@@ -29,7 +28,7 @@ public class NoteModule implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "se_id")
     SemestreEtudiant semestreEtudiant;
-    @OneToMany(mappedBy = "noteModule", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "noteModule", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     List<NoteElementModule> noteElementModules;
     @Id
     @GeneratedValue

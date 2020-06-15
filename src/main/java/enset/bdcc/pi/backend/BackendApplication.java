@@ -94,7 +94,6 @@ public class BackendApplication implements CommandLineRunner {
         //we can save the session without
 //        System.out.println(session.getId());
         for (Etudiant etudiant : etudiantArrayList) {
-            //session is detached???
             session.getEtudiantSessions().add(new EtudiantSession(etudiant, session));
         }
         sessionRepository.save(session);
