@@ -23,9 +23,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+//@ToString
 public class Element implements Serializable {
-    @ManyToMany(mappedBy = "elements")
+    @ManyToMany(mappedBy = "elements",cascade = CascadeType.REMOVE)
     List<Module> modules = new ArrayList<>();
     //IMPORTANT,  PEUT CAUSER DES PROBLEMES
     @OneToMany(mappedBy = "element", fetch = FetchType.LAZY,cascade = CascadeType.ALL)

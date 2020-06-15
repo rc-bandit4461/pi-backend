@@ -21,7 +21,7 @@ import java.util.List;
 @ToString
 public class Session implements Serializable {
     @Column(name = "etud_session")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session", orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
     @Id
     @GeneratedValue
@@ -30,12 +30,15 @@ public class Session implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "filiere_id")
     private Filiere filiere;
-    //    @OneToMany(fetch = FetchType.LAZY,mappedBy = "session")
-//    private List<ReclamationRepository> reclamationList;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "session",cascade = CascadeType.REMOVE)
+    private List<Reclamation> reclamationList;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
-
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
+    private List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
+    private List<SemestreFiliere> semestreFilieres = new ArrayList<>();
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize created date

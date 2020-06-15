@@ -24,21 +24,18 @@ public class SemestreEtudiant extends Semestre implements Serializable {
 //    List<Examen> examenList;
 //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
 //    List<NoteModule> noteModules;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "session_id")
     private Session session;
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id")
     private Etudiant etudiant;
-    @Column(name = "created_at")
-    @CreatedDate
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
 
     public SemestreEtudiant(int numero, boolean isDone) {
         super(numero, isDone);
+    }
+    public SemestreEtudiant(Etudiant etudiant,Session session,int numero, boolean isDone) {
+        super(numero, isDone);
+        this.etudiant = etudiant;this.session = session;
     }
 }

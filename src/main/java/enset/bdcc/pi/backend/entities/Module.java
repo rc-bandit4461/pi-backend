@@ -22,7 +22,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@ToString
+//@ToString
 public class Module implements Serializable {
     @Id
     @GeneratedValue
@@ -35,7 +35,7 @@ public class Module implements Serializable {
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "module_element",
             joinColumns = @JoinColumn(name = "module_id"),
             inverseJoinColumns = @JoinColumn(name = "element_id"))
@@ -57,4 +57,6 @@ public class Module implements Serializable {
     public Module(String libelle) {
         this.libelle = libelle;
     }
+
+
 }

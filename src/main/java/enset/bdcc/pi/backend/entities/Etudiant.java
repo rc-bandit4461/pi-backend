@@ -30,7 +30,7 @@ public class Etudiant implements Serializable {
     protected String password;
 
     @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
-    private List<Reclamation> reclamationList = new ArrayList<>();
+    private List<Reclamation> reclamations = new ArrayList<>();
 
 
     @Column(updatable = false, name = "created_at")
@@ -42,7 +42,8 @@ public class Etudiant implements Serializable {
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "etudiant")
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
-
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "etudiant")
+    List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
     public Etudiant(String cin, String prenom, String nom) {
         this.cin = cin;
         this.nom = nom;

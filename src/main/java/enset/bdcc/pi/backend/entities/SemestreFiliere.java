@@ -16,6 +16,7 @@ import java.util.List;
 @Setter
 @Getter
 //@ToString
+//Lombok toString causes  stackoverflow
 public class SemestreFiliere extends Semestre implements Serializable {
     //    @ManyToMany(mappedBy = "module_sf")
     @OneToMany(mappedBy = "semestreFiliere",cascade = CascadeType.ALL)
@@ -43,4 +44,6 @@ public class SemestreFiliere extends Semestre implements Serializable {
     public SemestreFiliere(int i) {
         super(i);
     }
+
+
 }

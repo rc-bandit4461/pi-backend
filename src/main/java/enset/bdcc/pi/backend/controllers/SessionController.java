@@ -2,6 +2,7 @@ package enset.bdcc.pi.backend.controllers;
 
 import enset.bdcc.pi.backend.dao.*;
 import enset.bdcc.pi.backend.entities.*;
+import enset.bdcc.pi.backend.entities.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +43,18 @@ public class SessionController {
 
         List<EtudiantSession> etudiantSessionList = session.getEtudiantSessions();
         session.setEtudiantSessions(new ArrayList<>()); //saving to retrieve its id
-
-
+        Filiere filiere1 = filiereRepository.getOne(session.getFiliere().getId());
+        //getting filiere schema to save it
+        List<SemestreFiliere> semestreFiliereList = new ArrayList<>(filiere1.getSemestreFilieres());
+        for (SemestreFiliere semestreFiliere : semestreFiliereList) {
+                semestreFiliere.setFiliere(null);
+                semestreFiliere.setSession(session);
+            for (Module module : semestreFiliere.getModules()) {
+                module.setId(null);
+            }
+            semestreFiliere.setId(null);
+        }
+        session.setSemestreFilieres(semestreFiliereList);
         sessionRepository.save(session);
         //ORDER IMPORTANT, otherwise we cant create EtudaintSession, we need ID
         for (EtudiantSession etudiantSession : etudiantSessionList) {
@@ -51,23 +62,10 @@ public class SessionController {
             etudiantSession.setEtudiant(etudiantRepository.getOne(etudiantSession.getEtudiant().getId()));
             etudiantSession.setId(new EtudiantSessionKey(etudiantSession.getEtudiant(), session));
         }
+
         session.setEtudiantSessions(etudiantSessionList);
 
         sessionRepository.save(session);
-//        etudiantSessionRepository.saveAll(etudiantSessionList);
 
-//        for (EtudiantSession etudiantSession : session.getEtudiantSessions()) {
-//            Etudiant etudiant = etudiantRepository.getOne(etudiantSession.getEtudiant().getId());
-//            etudiantSessionList.add(new EtudiantSession(etudiant, session));
-//        }
-//        session.setEtudiantSessions(etudiantSessionList);
-//        session.setFiliere(filiere);
-//        System.out.println(session);
-//        sessionRepository.save(session);
-//        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(session.getId())
-//                .toUri();
-//        return ResponseEntity.created(uri).body(session);
     }
 }

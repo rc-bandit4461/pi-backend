@@ -42,24 +42,6 @@ public class BackendApplication implements CommandLineRunner {
         SpringApplication.run(BackendApplication.class, args);
     }
 
-    @Transactional
-    public void preloadSession() {
-        Session session = new Session(2004, filiereList.get(0));
-//        System.out.println("SESSION ID RECOVERED, IS PERSISTENCE CONTEXT WORKING? "); //YES
-        sessionRepository.save(session);
-        //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
-        //we can save the session without
-//        System.out.println(session.getId());
-        for (Etudiant etudiant : etudiantArrayList) {
-            //session is detached???
-            session.getEtudiantSessions().add(new EtudiantSession(etudiant, session));
-        }
-        sessionRepository.save(session);
-//        etudiantSessionRepository.saveAll(session.getEtudiantSessions());
-        sessionList.add(session);
-
-    }
-
     @Override
     public void run(String... args) throws Exception {
 
@@ -77,16 +59,48 @@ public class BackendApplication implements CommandLineRunner {
         preloadEleemnts();
         preloadFiliere1();
         preloadFiliere2();
-        persist();
         preloadSession();
 
 
     }
 
-    private void persist() {
-        etudiantRepository.saveAll(etudiantArrayList);
-        filiereRepository.saveAll(filiereList);
+    @Transactional
+    public void preloadSession() {
+        Session session = new Session(2004, filiereList.get(0));
+        List<SemestreFiliere> semestreFiliereList = new ArrayList<>(filiereList.get(0).getSemestreFilieres());
+        List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
+        semestreFiliereList.forEach(semestreFiliere -> {
+            semestreFiliere.setId(null);
+            etudiantArrayList.forEach(etudiant -> {
+                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, session, semestreFiliere.getNumero(), false);
+                etudiant.getSemestreEtudiants().add(semestreEtudiant);
+                semestreEtudiants.add(semestreEtudiant);
+            });
+            semestreFiliere.getModules().forEach(module -> {
+                semestreFiliere.setSession(session);
+                semestreFiliere.setFiliere(null);
+                module.setId(null);
+                module.getElements().forEach(element -> {
+                    element.getModules().add(module);
+
+                });
+            });
+            semestreFiliere.setId(null);
+        });
+        session.setSemestreFilieres(semestreFiliereList);
+        session.setSemestreEtudiants(semestreEtudiants);
+        sessionRepository.save(session);
+        //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
+        //we can save the session without
+//        System.out.println(session.getId());
+        for (Etudiant etudiant : etudiantArrayList) {
+            //session is detached???
+            session.getEtudiantSessions().add(new EtudiantSession(etudiant, session));
+        }
+        sessionRepository.save(session);
+        sessionList.add(session);
     }
+
 
     public void preLoadEtudiants() {
         etudiantArrayList.add(new Etudiant("MA137551", "Zakaria", "Chadli"));
@@ -105,8 +119,10 @@ public class BackendApplication implements CommandLineRunner {
         elementList.add(new Element("Economie de gestion"));
         elementList.add(new Element("Comptabilité"));
         elementList.add(new Element("Projet PI"));
+        elementRepository.saveAll(elementList);
     }
 
+    @Transactional
     public void preloadFiliere1() {   //Filieres  + Modules + Elements
 
         List<Module> moduleList1 = new ArrayList<>();
@@ -147,7 +163,7 @@ public class BackendApplication implements CommandLineRunner {
         semestre2.getModules().addAll(moduleList2);
         semestre2.setFiliere(filiere);
         filiere.getSemestreFilieres().add(semestre2);
-//        filiereRepository.save(filiere);
+        filiereRepository.save(filiere);
 
     }
 
@@ -191,8 +207,7 @@ public class BackendApplication implements CommandLineRunner {
         semestre2.getModules().addAll(moduleList2);
         semestre2.setFiliere(filiere);
         filiere.getSemestreFilieres().add(semestre2);
-//        filiereRepository.save(filiere);
-//        filiereRepository.flush();
+        filiereRepository.save(filiere);
 
     }
 
