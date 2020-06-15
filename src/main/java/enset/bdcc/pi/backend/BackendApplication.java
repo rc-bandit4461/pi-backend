@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +18,13 @@ public class BackendApplication implements CommandLineRunner {
     List<Element> elementList = new ArrayList<>();
     List<Filiere> filiereList = new ArrayList<>();
     ArrayList<Etudiant> etudiantArrayList = new ArrayList<>();
+    List<Session> sessionList = new ArrayList<>();
 
 
     @Autowired
     private RepositoryRestConfiguration restConfiguration;
+    @Autowired
+    private EtudiantSessionRepository etudiantSessionRepository;
     @Autowired
     private SemestreFiliereRepository semestreFiliereRepository;
     @Autowired
@@ -33,15 +37,32 @@ public class BackendApplication implements CommandLineRunner {
     private EtudiantRepository etudiantRepository;
     @Autowired
     private SessionRepository sessionRepository;
-    @Autowired
-    private EtudiantSessionRepository etudiantSessionRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
     }
 
+    @Transactional
+    public void preloadSession() {
+        Session session = new Session(2004, filiereList.get(0));
+//        System.out.println("SESSION ID RECOVERED, IS PERSISTENCE CONTEXT WORKING? "); //YES
+        sessionRepository.save(session);
+        //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
+        //we can save the session without
+//        System.out.println(session.getId());
+        for (Etudiant etudiant : etudiantArrayList) {
+            //session is detached???
+            session.getEtudiantSessions().add(new EtudiantSession(etudiant, session));
+        }
+        sessionRepository.save(session);
+//        etudiantSessionRepository.saveAll(session.getEtudiantSessions());
+        sessionList.add(session);
+
+    }
+
     @Override
     public void run(String... args) throws Exception {
+
         restConfiguration.exposeIdsFor(Element.class);
         restConfiguration.exposeIdsFor(Module.class);
         restConfiguration.exposeIdsFor(Filiere.class);
@@ -51,11 +72,13 @@ public class BackendApplication implements CommandLineRunner {
         restConfiguration.exposeIdsFor(Reclamation.class);
         restConfiguration.exposeIdsFor(Session.class);
         restConfiguration.exposeIdsFor(Etudiant.class);
+        restConfiguration.exposeIdsFor(EtudiantSession.class);
         preLoadEtudiants();
         preloadEleemnts();
         preloadFiliere1();
         preloadFiliere2();
         persist();
+        preloadSession();
 
 
     }

@@ -2,10 +2,7 @@ package enset.bdcc.pi.backend.entities;
 
 import enset.bdcc.pi.backend.entities.SemestreFiliere;
 import enset.bdcc.pi.backend.entities.Session;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,8 +19,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-//@ToString
+@ToString
 public class Filiere implements Serializable {
     @Id
     @GeneratedValue
@@ -37,7 +35,7 @@ public class Filiere implements Serializable {
     private Date updatedAt; // initialize updated date
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "filiere")
     private List<Session> sessions = new ArrayList<>();
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "filiere",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "filiere",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<SemestreFiliere> semestreFilieres = new ArrayList<>();
 
     public Filiere(String libelle, List<SemestreFiliere> list) {

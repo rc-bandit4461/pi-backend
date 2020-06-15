@@ -21,6 +21,7 @@ import java.util.Date;
 @ToString
 public class EtudiantSession implements Serializable {
     @EmbeddedId
+
     EtudiantSessionKey id;
     @ManyToOne
     @MapsId("student_id")
@@ -37,5 +38,10 @@ public class EtudiantSession implements Serializable {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
+    public EtudiantSession(Etudiant etudiant,Session session){
+        this.etudiant = etudiant;
+        this.session = session;
+        id = new EtudiantSessionKey(etudiant.getId(),session.getId());
+    }
 
 }

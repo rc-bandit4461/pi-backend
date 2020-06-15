@@ -24,10 +24,10 @@ public class SemestreEtudiant extends Semestre implements Serializable {
 //    List<Examen> examenList;
 //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
 //    List<NoteModule> noteModules;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id")
     private Session session;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
     @JoinColumn(name = "student_id")
     private Etudiant etudiant;
     @Column(name = "created_at")

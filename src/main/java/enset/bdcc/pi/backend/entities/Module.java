@@ -22,7 +22,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-//@ToString
+@ToString
 public class Module implements Serializable {
     @Id
     @GeneratedValue
