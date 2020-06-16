@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,12 +19,12 @@ import java.util.List;
 @Setter
 @ToString
 public class SemestreEtudiant extends Semestre implements Serializable {
-    //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
+//        @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
 //    List<DemandeReleve> demandeReleves;
 //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
 //    List<Examen> examenList;
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
-//    List<NoteModule> noteModules;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant",cascade = CascadeType.ALL)
+    List<NoteModule> noteModules =  new ArrayList<>();
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "session_id")
     private Session session;

@@ -42,7 +42,7 @@ public class NoteElementModule implements Serializable {
     @ManyToOne
     @JoinColumn(name = "element_id")
     private Element element;
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "noteElementModule",cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "noteElementModule",cascade = CascadeType.REMOVE)
     private List<Examen> examenList = new ArrayList<>();
 
     @Column(name = "note_normale")
@@ -59,7 +59,10 @@ public class NoteElementModule implements Serializable {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
-
+    public NoteElementModule(NoteModule noteModule, Element element){
+          this.noteModule = noteModule;
+          this.element = element;
+    }
     public NoteElementModule(float noteNormale, float noteRatt, float noteDeliberation, boolean isRatt) {
         this.isRatt = isRatt;
         this.noteNormale = noteNormale;

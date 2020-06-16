@@ -36,6 +36,8 @@ public class BackendApplication implements CommandLineRunner {
     @Autowired
     private EtudiantRepository etudiantRepository;
     @Autowired
+    private SemestreEtudiantRepository semestreEtudiantRepository;
+    @Autowired
     private SessionRepository sessionRepository;
 
     public static void main(String[] args) {
@@ -47,6 +49,8 @@ public class BackendApplication implements CommandLineRunner {
 
         restConfiguration.exposeIdsFor(Element.class);
         restConfiguration.exposeIdsFor(Module.class);
+        restConfiguration.exposeIdsFor(NoteModule.class);
+        restConfiguration.exposeIdsFor(NoteElementModule.class);
         restConfiguration.exposeIdsFor(Filiere.class);
         restConfiguration.exposeIdsFor(SemestreFiliere.class);
         restConfiguration.exposeIdsFor(SemestreEtudiant.class);
@@ -90,6 +94,22 @@ public class BackendApplication implements CommandLineRunner {
         session.setSemestreFilieres(semestreFiliereList);
         session.setSemestreEtudiants(semestreEtudiants);
         sessionRepository.save(session);
+        session.getSemestreFilieres().forEach(semestreFiliere -> {
+            semestreEtudiants.forEach(semestreEtudiant -> {
+                if(semestreEtudiant.getNumero() != semestreFiliere.getNumero()) return;
+                semestreFiliere.getModules().forEach(module -> {
+                    NoteModule noteModule = new NoteModule(module,semestreEtudiant);
+                    module.getElements().forEach(element -> {
+                        NoteElementModule noteElementModule = new NoteElementModule(noteModule,element);
+                        noteModule.getNoteElementModules().add(noteElementModule);
+                        element.getNoteElementModules().add(noteElementModule);
+                    });
+                    semestreEtudiant.getNoteModules().add(noteModule);
+                });
+            });
+        });
+        //update, now we have to save semestreEtudiant by ourselves, so we can use Module IDs in NoteModule,
+        semestreEtudiantRepository.saveAll(semestreEtudiants);
         //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
         //we can save the session without
 //        System.out.println(session.getId());

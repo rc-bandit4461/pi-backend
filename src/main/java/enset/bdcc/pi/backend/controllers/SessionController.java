@@ -33,39 +33,77 @@ public class SessionController {
     private SessionRepository sessionRepository;
     @Autowired
     private EtudiantSessionRepository etudiantSessionRepository;
+    @Autowired
+    private SemestreEtudiantRepository semestreEtudiantRepository;
+
 
     @PostMapping(value = "/saveSession")
     @Transactional
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveSession(@RequestBody Session session) throws ResponseStatusException {
-        System.out.println(session);
+    public void saveSession2(@RequestBody Session session) throws Exception {
+        List<SemestreFiliere> semestreFiliereList2 = new ArrayList<>(filiereRepository.getOne(session.getFiliere().getId()).getSemestreFilieres());
+        List<SemestreFiliere> semestreFiliereList = new ArrayList<>();
+        List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
+        List<Etudiant> etudiantList = new ArrayList<>();
+        List<EtudiantSession> etudiantSessionList = new ArrayList<>(session.getEtudiantSessions());
+        semestreFiliereList2.forEach(semestreFiliere -> {
+            SemestreFiliere semestreFiliere1 = new SemestreFiliere();
+            semestreFiliere1.setSession(session);
+            semestreFiliere1.setModules(semestreFiliere.getModules());
+            semestreFiliere1.setNumero(semestreFiliere.getNumero());
+        });
 
-        List<EtudiantSession> etudiantSessionList = session.getEtudiantSessions();
-        session.setEtudiantSessions(new ArrayList<>()); //saving to retrieve its id
-        Filiere filiere1 = filiereRepository.getOne(session.getFiliere().getId());
-        //getting filiere schema to save it
-        List<SemestreFiliere> semestreFiliereList = new ArrayList<>(filiere1.getSemestreFilieres());
-        for (SemestreFiliere semestreFiliere : semestreFiliereList) {
-                semestreFiliere.setFiliere(null);
-                semestreFiliere.setSession(session);
-            for (Module module : semestreFiliere.getModules()) {
-                module.setId(null);
-            }
-            semestreFiliere.setId(null);
-        }
-        session.setSemestreFilieres(semestreFiliereList);
-        sessionRepository.save(session);
-        //ORDER IMPORTANT, otherwise we cant create EtudaintSession, we need ID
-        for (EtudiantSession etudiantSession : etudiantSessionList) {
+        session.setEtudiantSessions(new ArrayList<>());
+        etudiantSessionList.forEach(etudiantSession -> {
+            Etudiant etudiant = etudiantRepository.getOne(etudiantSession.getEtudiant().getId());
+            etudiantSession.setEtudiant(etudiant);
             etudiantSession.setSession(session);
-            etudiantSession.setEtudiant(etudiantRepository.getOne(etudiantSession.getEtudiant().getId()));
-            etudiantSession.setId(new EtudiantSessionKey(etudiantSession.getEtudiant(), session));
-        }
+            etudiantList.add(etudiant);
 
-        session.setEtudiantSessions(etudiantSessionList);
+        });
+        //EtudiantSession needs its ID to be persisted, aka we need to persist session first
+        semestreFiliereList.forEach(semestreFiliere -> {
+            semestreFiliere.setId(null);
+            etudiantList.forEach(etudiant -> {
+                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, session, semestreFiliere.getNumero(), false);
+                etudiant.getSemestreEtudiants().add(semestreEtudiant);
+                semestreEtudiants.add(semestreEtudiant);
+            });
+            semestreFiliere.getModules().forEach(module -> {
+                semestreFiliere.setSession(session);
+                semestreFiliere.setFiliere(null);
+                module.setId(null);
+                module.getElements().forEach(element -> {
+                    element.getModules().add(module);
 
+                });
+            });
+            semestreFiliere.setId(null);
+        });
+        session.setSemestreFilieres(semestreFiliereList);
+        session.setSemestreEtudiants(semestreEtudiants); //cascade is not persiste, semestreEtudiants not saved yet
         sessionRepository.save(session);
+        //Creation de notemOdules
+        session.getSemestreFilieres().forEach(semestreFiliere -> {
+            semestreEtudiants.forEach(semestreEtudiant -> {
+                if (semestreEtudiant.getNumero() != semestreFiliere.getNumero()) return;
+                semestreFiliere.getModules().forEach(module -> {
+                    NoteModule noteModule = new NoteModule(module, semestreEtudiant);
+                    module.getElements().forEach(element -> {
+                        NoteElementModule noteElementModule = new NoteElementModule(noteModule, element);
+                        noteModule.getNoteElementModules().add(noteElementModule);
+                        element.getNoteElementModules().add(noteElementModule);
+                    });
+                    semestreEtudiant.getNoteModules().add(noteModule);
+                });
+            });
+        });
+        semestreEtudiantRepository.saveAll(semestreEtudiants);
+        //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
+        //we can save the session without
+        etudiantSessionList.forEach(EtudiantSession::generateKeyFromCurrentAttributes);
+        etudiantSessionRepository.saveAll(etudiantSessionList);
 
     }
 }

@@ -43,5 +43,9 @@ public class EtudiantSession implements Serializable {
         this.session = session;
         id = new EtudiantSessionKey(etudiant.getId(),session.getId());
     }
+    public void generateKeyFromCurrentAttributes(){
+        id = new EtudiantSessionKey(etudiant.getId(),session.getId());
+
+    }
 
 }

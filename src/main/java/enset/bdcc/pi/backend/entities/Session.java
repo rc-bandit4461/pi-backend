@@ -32,11 +32,11 @@ public class Session implements Serializable {
     private Filiere filiere;
     private boolean is_done = false;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "session",cascade = CascadeType.REMOVE)
-    private List<Reclamation> reclamationList;
+    private List<Reclamation> reclamations;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "session")
     private List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
     private List<SemestreFiliere> semestreFilieres = new ArrayList<>();
