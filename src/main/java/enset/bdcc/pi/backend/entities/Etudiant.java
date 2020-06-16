@@ -1,5 +1,6 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -35,14 +36,18 @@ public class Etudiant implements Serializable {
 
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date createdAt; // initialize created date
     @UpdateTimestamp
     @Column(name = "updated_at")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date updatedAt; // initialize updated date
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "etudiant")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "etudiant")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
     public Etudiant(String cin, String prenom, String nom) {
         this.cin = cin;
