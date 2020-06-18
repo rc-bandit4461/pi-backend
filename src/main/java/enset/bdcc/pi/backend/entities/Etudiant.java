@@ -33,7 +33,7 @@ public class Etudiant implements Serializable {
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
     private String cne;
-    private String sex;
+    private String sexe;
     private LocalDate date_naissance;
     private String ville_naissance;
     private String email;
@@ -47,10 +47,10 @@ public class Etudiant implements Serializable {
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
 
-    public Etudiant(String cin, String prenom, String nom, String cne, String sex, LocalDate date_naissance, String ville_naissance, String email, String infos) {
+    public Etudiant(String cin, String prenom, String nom, String cne, String sexe, LocalDate date_naissance, String ville_naissance, String email, String infos) {
         this.cin = cin;
         this.cne = cne;
-        this.sex = sex;
+        this.sexe = sexe;
         this.date_naissance = date_naissance;
         this.ville_naissance = ville_naissance;
         this.email = email;

@@ -36,8 +36,6 @@ public class Session implements Serializable {
     @JsonProperty("is_done")
     @Column(name = "is_done")
     private boolean isDone = false;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "session",cascade = CascadeType.REMOVE)
-    private List<Reclamation> reclamations;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
