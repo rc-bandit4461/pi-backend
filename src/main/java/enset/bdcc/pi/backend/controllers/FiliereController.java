@@ -42,7 +42,6 @@ public class FiliereController {
     public void save2(@RequestBody Filiere filiere) throws ResponseStatusException {
         System.out.println(filiere.toString());
         int i = 1;
-
         for (SemestreFiliere semestreFiliere : filiere.getSemestreFilieres()) {
             semestreFiliere.setNumero(i++);
             for (Module module : semestreFiliere.getModules()) {

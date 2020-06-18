@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @ToString
+
 public class SemestreEtudiant extends Semestre implements Serializable {
 //        @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
 //    List<DemandeReleve> demandeReleves;

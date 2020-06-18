@@ -30,6 +30,9 @@ public class Element implements Serializable {
     //IMPORTANT,  PEUT CAUSER DES PROBLEMES
     @OneToMany(mappedBy = "element", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     List<NoteElementModule> noteElementModules = new ArrayList<>();
+    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    List<Examen> examens = new ArrayList<>();
+
     @Id
     @GeneratedValue
     private Long id;

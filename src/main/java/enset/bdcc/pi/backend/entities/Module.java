@@ -34,7 +34,8 @@ public class Module implements Serializable {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
-
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "module")
+    private List<Examen> examens = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "module_element",
             joinColumns = @JoinColumn(name = "module_id"),
