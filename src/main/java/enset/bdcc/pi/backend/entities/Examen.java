@@ -35,13 +35,13 @@ public class Examen implements Serializable {
     //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "nem_id")
 //    NoteElementModule noteElementModule;
-    @OneToMany(mappedBy = "examen", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "examen", cascade = CascadeType.ALL)
     private List<NoteExamen> noteExamens = new ArrayList<>();
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "module")
+    @JoinColumn(name = "module_id")
     private Module module;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "element")
+    @JoinColumn(name = "element_id")
     private Element element;
     @Id
     @GeneratedValue
@@ -57,6 +57,7 @@ public class Examen implements Serializable {
 //    private int numero = 1; //numero de semestre
     @JsonInclude
     @Transient
+    @JsonProperty("noteEtudiants")
     private List<NoteEtudiant> noteEtudiants = new ArrayList<>();
     @Column(name = "is_ratt",nullable = false)
     @JsonProperty("is_ratt")

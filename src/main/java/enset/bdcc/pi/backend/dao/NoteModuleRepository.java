@@ -17,7 +17,12 @@ import java.util.List;
 @RepositoryRestResource
 @Repository
 public interface NoteModuleRepository extends JpaRepository<NoteModule,Long> {
-    @RestResource(path="/byNoteModuleAndSE")
+    @RestResource(path="/bymIdandSEId")
     @Query("select p from NoteModule p where p.semestreEtudiant.id=:idSE and p.module.id=:idModule")
     public NoteModule getByModuleIdAndSEId(@Param("idSE") Long idSE,@Param("idModule") Long idModule);
+
+    @RestResource(path="/bymIdandsIdandeId")
+    @Query("SELECT p from NoteModule p where p.module.id=:idModule and p.semestreEtudiant.id in(select se.id from SemestreEtudiant se where se.session.id=:idSession and se.etudiant.id=:idEtudiant)")
+    public NoteModule getByModuleAndSessionAndEtudiantIds(@Param("idSession") Long idSE,@Param("idModule") Long idModule,@Param("idEtudiant") Long idEtudiant);
+
 }

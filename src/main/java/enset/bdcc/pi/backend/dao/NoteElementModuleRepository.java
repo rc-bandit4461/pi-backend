@@ -19,4 +19,7 @@ public interface NoteElementModuleRepository extends JpaRepository<NoteElementMo
     @RestResource(path = "/byElementAndNoteModule")
     @Query("select p from NoteElementModule p where p.element.id=:idElement and p.noteModule.id=:idNoteModule")
     public NoteElementModule getByElementAndNoteModule(@Param("idElement") Long idElement, @Param("idNoteModule") Long idNoteModule);
+    @RestResource(path="/test2")
+    @Query("select p from NoteElementModule  p where p.element.id=:idElement and p.noteModule.id=(select nm.id from NoteModule  nm where nm.module.id=:idModule and nm.semestreEtudiant.id in(select se.id from SemestreEtudiant se where se.etudiant.id=:idEtudiant and se.session.id=:idSession))")
+    public NoteElementModule getByElementAndModuleAndEtudiantAndSession(@Param("idElement") Long element, @Param("idModule") Long idModule,@Param("idEtudiant") Long idEtudiant,@Param("idSession") Long idSession);
 }

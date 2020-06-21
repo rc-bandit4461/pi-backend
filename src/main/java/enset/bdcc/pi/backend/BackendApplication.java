@@ -94,52 +94,46 @@ public class BackendApplication implements CommandLineRunner {
 
     @Transactional
     public void preloadSession() {
-        Session session = new Session(2004, filiereList.get(0));
         List<SemestreFiliere> semestreFiliereList = new ArrayList<>(filiereList.get(0).getSemestreFilieres());
         List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
-        semestreFiliereList.forEach(semestreFiliere -> {
-            SemestreFiliere sessionSemestre = new SemestreFiliere();
-            sessionSemestre.setNumero(semestreFiliere.getNumero());
-            sessionSemestre.setSession(session);
-            sessionSemestre.setFiliere(null);
-            session.getSemestreFilieres().add(sessionSemestre);
+
+        //TOUT D'abord on crée la session
+        Session session = new Session(2004, filiereList.get(0));
+        //On recopie les modules et elements de la filieres, pour avoir ses propres modules
+        session.getFiliere().getSemestreFilieres().forEach(semestreFiliere -> {
+            SemestreFiliere semestreSession = new SemestreFiliere(semestreFiliere.getNumero(), semestreFiliere.isDone(), session);
+            semestreFiliere.getModules().forEach(sfModule -> { //sf = semestreFiliere, ss = semestreSesison
+                System.out.println("HERE IS A FUCKING SF" + sfModule.getLibelle());
+                Module ssModule = new Module(sfModule.getLibelle());
+                ssModule.setSemestreFiliere(semestreSession);
+                sfModule.getElements().forEach(element -> {
+                    ssModule.getElements().add(element);
+                });
+                semestreSession.getModules().add(ssModule);
+            });
+            session.getSemestreFilieres().add(semestreSession);
+        });
+        sessionRepository.save(session);
+        //Ensuite on crée les semestres des étudiants et on les lient avec les modules de la session
+        session.getSemestreFilieres().forEach(semestreSession -> {
             etudiantArrayList.forEach(etudiant -> {
-                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, session, semestreFiliere.getNumero(), false);
-                semestreFiliere.getModules().forEach(module -> {
-                    NoteModule noteModule = new NoteModule(module, semestreEtudiant);
-                    semestreEtudiant.getNoteModules().add(noteModule);
-                    module.getElements().forEach(element -> {
-                        NoteElementModule noteElementModule = new NoteElementModule(noteModule, element);
+                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant,session,semestreSession.getNumero(),false);
+                semestreSession.getModules().forEach(ssModule -> {
+                    NoteModule noteModule = new NoteModule(ssModule,semestreEtudiant);
+                    ssModule.getElements().forEach(element -> {
+                        NoteElementModule noteElementModule = new NoteElementModule(noteModule,element);
                         noteModule.getNoteElementModules().add(noteElementModule);
                     });
+                    semestreEtudiant.getNoteModules().add(noteModule);
                 });
-
                 etudiant.getSemestreEtudiants().add(semestreEtudiant);
-                semestreEtudiants.add(semestreEtudiant);
-            });
-            semestreFiliere.getModules().forEach(module -> {
-                Module sessionModule = new Module();
-                sessionSemestre.getModules().add(sessionModule);
-                sessionModule.setLibelle(module.getLibelle());
-                sessionModule.setSemestreFiliere(sessionSemestre);
-                sessionModule.getElements().addAll(module.getElements());
-                module.getElements().forEach(element -> {
-                    System.out.println(element.getLibelle());
-                    element.getModules().add(module);
-
-                });
+                session.getSemestreEtudiants().add(semestreEtudiant);
             });
         });
-        session.setSemestreEtudiants(semestreEtudiants);
-        sessionRepository.save(session);
 
-        //update, now we have to save semestreEtudiant by ourselves, so we can use Module IDs in NoteModule,
-        semestreEtudiantRepository.saveAll(semestreEtudiants);
-        //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
-        //we can save the session without
-//        System.out.println(session.getId());
         sessionRepository.save(session);
         sessionList.add(session);
+        //Ensuite on crée les sessions des étudiants
         List<EtudiantSession> etudiantSessionList = new ArrayList<>();
         for (Etudiant etudiant : etudiantArrayList) {
             etudiantSessionList.add(new EtudiantSession(etudiant, session));
@@ -195,7 +189,7 @@ public class BackendApplication implements CommandLineRunner {
         List<Module> moduleList1 = new ArrayList<>();
         List<Module> moduleList2 = new ArrayList<>();
         Module m1 = new Module("Mathematique Appliquée 1");
-        Module m2 = new Module("Mathematique Appliquée 1");
+        Module m2 = new Module("Mathematique Appliquée 2");
         Module m3 = new Module("Techniques de programmation");
         Module m4 = new Module("Bases de données");
         Module m5 = new Module("Technologies");

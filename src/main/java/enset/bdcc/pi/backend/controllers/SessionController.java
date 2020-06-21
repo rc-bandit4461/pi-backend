@@ -126,78 +126,47 @@ public class SessionController {
         session.getEtudiants().forEach(etudiant -> {
             etudiantArrayList.add(etudiantRepository.getOne(etudiant.getId()));
         });
-        semestreFiliereList.forEach(semestreFiliere -> {
-            SemestreFiliere sessionSemestre = new SemestreFiliere();
-            sessionSemestre.setNumero(semestreFiliere.getNumero());
-            sessionSemestre.setSession(session);
-            sessionSemestre.setFiliere(null);
-            session.getSemestreFilieres().add(sessionSemestre);
+        Filiere filiere = filiereRepository.getOne(session.getFiliere().getId());
+        Session toCreateSession = new Session(2004, filiere);
+
+        //On recopie les modules et elements de la filieres, pour avoir ses propres modules
+        toCreateSession.getFiliere().getSemestreFilieres().forEach(semestreFiliere -> {
+            SemestreFiliere semestreSession = new SemestreFiliere(semestreFiliere.getNumero(), semestreFiliere.isDone(), toCreateSession);
+            semestreFiliere.getModules().forEach(sfModule -> { //sf = semestreFiliere, ss = semestreSesison
+                System.out.println("HERE IS A FUCKING SF" + sfModule.getLibelle());
+                Module ssModule = new Module(sfModule.getLibelle());
+                ssModule.setSemestreFiliere(semestreSession);
+                sfModule.getElements().forEach(element -> {
+                    ssModule.getElements().add(element);
+                });
+                semestreSession.getModules().add(ssModule);
+            });
+            toCreateSession.getSemestreFilieres().add(semestreSession);
+        });
+        sessionRepository.save(toCreateSession);
+        //Ensuite on crée les semestres des étudiants et on les lient avec les modules de la session
+        toCreateSession.getSemestreFilieres().forEach(semestreSession -> {
             etudiantArrayList.forEach(etudiant -> {
-                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, session, semestreFiliere.getNumero(), false);
-                semestreFiliere.getModules().forEach(module -> {
-                    NoteModule noteModule = new NoteModule(module, semestreEtudiant);
-                    semestreEtudiant.getNoteModules().add(noteModule);
-                    module.getElements().forEach(element -> {
+                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, toCreateSession, semestreSession.getNumero(), false);
+                semestreSession.getModules().forEach(ssModule -> {
+                    NoteModule noteModule = new NoteModule(ssModule, semestreEtudiant);
+                    ssModule.getElements().forEach(element -> {
                         NoteElementModule noteElementModule = new NoteElementModule(noteModule, element);
                         noteModule.getNoteElementModules().add(noteElementModule);
                     });
+                    semestreEtudiant.getNoteModules().add(noteModule);
                 });
-
                 etudiant.getSemestreEtudiants().add(semestreEtudiant);
-                semestreEtudiants.add(semestreEtudiant);
+                toCreateSession.getSemestreEtudiants().add(semestreEtudiant);
             });
-            semestreFiliere.getModules().forEach(module -> {
-                Module sessionModule = new Module();
-                sessionSemestre.getModules().add(sessionModule);
-                sessionModule.setLibelle(module.getLibelle());
-                sessionModule.setSemestreFiliere(sessionSemestre);
-                sessionModule.getElements().addAll(module.getElements());
-                module.getElements().forEach(element -> {
-                    System.out.println(element.getLibelle());
-                    element.getModules().add(module);
-
-                });
-            });
-//            semestreFiliere.setId(null);
         });
-        session.setSemestreEtudiants(semestreEtudiants);
-        sessionRepository.save(session);
-
-        //update, now we have to save semestreEtudiant by ourselves, so we can use Module IDs in NoteModule,
-        semestreEtudiantRepository.saveAll(semestreEtudiants);
-        //Session ID is not available UNTIL we save the Session--> meaning that we need to save the Session, and then
-        //we can save the session without
-//        System.out.println(session.getId());
-        sessionRepository.save(session);
+        sessionRepository.save(toCreateSession);
+        //Ensuite on crée les sessions des étudiants
         List<EtudiantSession> etudiantSessionList = new ArrayList<>();
         for (Etudiant etudiant : etudiantArrayList) {
-            etudiantSessionList.add(new EtudiantSession(etudiant, session));
+            etudiantSessionList.add(new EtudiantSession(etudiant, toCreateSession));
         }
         etudiantSessionRepository.saveAll(etudiantSessionList);
-    }
-
-
-    @PostMapping(value = "/saveExamen")
-    @Transactional
-    @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
-    public void saveExamen(@RequestBody Examen examen) {
-        List<NoteExamen> noteExamenList = new ArrayList<>();
-        Module module = moduleRepository.getOne(examen.getModule().getId());
-        SemestreFiliere semestreFiliere = module.getSemestreFiliere();
-        System.out.println("Semestre Filiere num" + semestreFiliere.getNumero());
-        Session session = module.getSemestreFiliere().getSession();
-        examenRepository.save(examen);
-        examen.getNoteEtudiants().forEach(noteEtudiant -> {
-            SemestreEtudiant semestreEtudiant = semestreEtudiantRepository.findByIdEtudiantAndIdSessionAndNumero(noteEtudiant.getEtudiant().getId(), session.getId(), module.getSemestreFiliere().getNumero());
-            NoteModule noteModule = noteModuleRepository.getByModuleIdAndSEId(semestreEtudiant.getId(), module.getId());
-            NoteElementModule noteElementModule = noteElementModuleRepository.getByElementAndNoteModule(examen.getElement().getId(), noteModule.getId());
-//            if(!noteElementModule.isRatt() && examen.isRatt()) noteElementModule.setRatt(examen.isRatt()); //should we leave it?
-            noteElementModuleRepository.save(noteElementModule);
-            NoteExamen noteExamen = new NoteExamen(examen, noteElementModule, noteEtudiant.getNote());
-            noteExamenList.add(noteExamen);
-        });
-        noteExamenRepository.saveAll(noteExamenList);
     }
 
 

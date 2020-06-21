@@ -38,6 +38,8 @@ public class Etudiant implements Serializable {
     private String ville_naissance;
     private String email;
     private String infos;
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "etudiant")
+    private List<NoteExamen> examens = new ArrayList<>();
     @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Reclamation> reclamations = new ArrayList<>();
     @Column(updatable = false, name = "created_at")

@@ -26,13 +26,22 @@ public class NoteExamen implements Serializable {
     private Date updatedAt; // initialize updated date
     private float note;
     @ManyToOne
-    @JoinColumn(name = "noteElementModule")
+    @JoinColumn(name = "nem_id")
     private NoteElementModule noteElementModule;
     @ManyToOne
-    @JoinColumn(name = "examen")
+    @JoinColumn(name = "examen_id")
     private Examen examen;
+    @ManyToOne
+    @JoinColumn(name="etudiant_id")
+    private Etudiant etudiant;
     public NoteExamen(Examen examen,NoteElementModule noteElementModule,float note){
         this.examen = examen;
+        this.noteElementModule = noteElementModule;
+        this.note = note;
+    }
+    public NoteExamen(Examen examen,Etudiant etudiant,NoteElementModule noteElementModule,float note){
+        this.examen = examen;
+        this.etudiant = etudiant;
         this.noteElementModule = noteElementModule;
         this.note = note;
     }
