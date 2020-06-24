@@ -53,7 +53,8 @@ public class NoteModuleController {
         boolean foundConsistent = false;
         for (NoteElementModule newNEM : newNEMs) {
             NoteElementModule oldNEM = noteElementModuleRepository.getOne(newNEM.getId());
-            oldNEM.setRatt(newNEM.isRatt());
+            if (newNEM.getNoteNormale() < 12) oldNEM.setRatt(true);
+            else oldNEM.setRatt(false);
             oldNEM.setNoteDeliberation(newNEM.getNoteDeliberation());
             if (!foundConsistent)
                 if (oldNEM.getNoteNormale() != newNEM.getNoteNormale() || oldNEM.getNoteRatt() != newNEM.getNoteRatt()) {
@@ -68,13 +69,39 @@ public class NoteModuleController {
             oldNEM.setRatt(newNEM.isRatt());
             noteElementModuleRepository.save(oldNEM);
         }
+        noteModuleRepository.saveAll(noteModuleList);
+        noteModuleList.forEach(noteModule -> {
+            refreshNoteModule(noteModule);
+        });
 
     }
+
+    @Transactional
+    void refreshNoteModule(NoteModule noteModule) {
+        noteModule = noteModuleRepository.getOne(noteModule.getId());
+        float noteNormale = 0, noteDeliberation = 0, noteRatt = 0;
+        for (NoteElementModule noteElementModule : noteModule.getNoteElementModules()) {
+            noteNormale += noteElementModule.getNoteNormale() * noteElementModule.getFacteur();
+            noteDeliberation += noteElementModule.getNoteDeliberation() * noteElementModule.getFacteur();
+            noteRatt += noteElementModule.getNoteRatt() * noteElementModule.getFacteur();
+        }
+        noteNormale /= noteModule.getNoteElementModules().size();
+        noteRatt /= noteModule.getNoteElementModules().size();
+        noteDeliberation /= noteModule.getNoteElementModules().size();
+        noteDeliberation = Math.max(noteDeliberation, Math.max(noteNormale, noteRatt));
+        noteModule.setNoteRatt(noteRatt);
+        noteModule.setNoteNormale(noteNormale);
+        noteModule.setNoteDeliberation(noteDeliberation);
+        noteModuleRepository.save(noteModule);
+    }
+
     @Transactional
     void consisteNoteElementModule(NoteElementModule noteElementModule) {
+
         float noteNormale = 0, noteRatt = 0;
         float facteurNormale = 0, facteurRatt = 0;
         List<Examen> examenList = new ArrayList<>();
+        List<NoteModule> noteModuleList = new ArrayList<>();
         for (NoteExamen noteExamen : noteElementModule.getNoteExamens()) {
             if (!examenList.contains(noteExamen.getExamen())) {
                 examenList.add(noteExamen.getExamen());
@@ -96,7 +123,6 @@ public class NoteModuleController {
             }
 
         }
-
         if (facteurRatt != 0) {
             noteElementModule.setRatt(true);
             noteRatt /= facteurRatt;
@@ -109,8 +135,10 @@ public class NoteModuleController {
         noteElementModule.setConsistent(true);
         noteElementModule.setNoteRatt(noteRatt);
         noteElementModule.setNoteNormale(noteNormale);
-        noteElementModule.setNoteDeliberation(noteNormale);
+        noteElementModule.setNoteDeliberation(Math.max(noteNormale, noteRatt));
         noteElementModuleRepository.save(noteElementModule);
+        refreshNoteModule(noteElementModule.getNoteModule());
+
     }
 
     @ResponseBody
@@ -145,8 +173,10 @@ public class NoteModuleController {
         noteNormale /= facteur;
         noteRatt /= facteur;
         noteDeliberation /= facteur;
-        noteModule.setNoteDeliberation(noteDeliberation);
         noteModule.setNoteNormale(noteNormale);
         noteModule.setNoteRatt(noteRatt);
+        noteModule.setNoteDeliberation(Math.max(Math.max(noteDeliberation, noteNormale), noteRatt));
+        noteModuleRepository.save(noteModule);
+
     }
 }

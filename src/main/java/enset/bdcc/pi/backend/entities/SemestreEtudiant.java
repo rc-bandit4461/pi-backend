@@ -32,7 +32,7 @@ public class SemestreEtudiant extends Semestre implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id")
     private Etudiant etudiant;
-
+    private float note = 0;
     public SemestreEtudiant(int numero, boolean isDone) {
         super(numero, isDone);
     }

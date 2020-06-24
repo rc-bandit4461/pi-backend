@@ -17,7 +17,11 @@ import java.util.List;
 @RepositoryRestResource
 @Repository
 public interface SemestreEtudiantRepository extends JpaRepository<SemestreEtudiant, Long> {
-    @RestResource(path = "/customQuery")
+    @RestResource(path = "/query3")
     @Query("select p from SemestreEtudiant  p where p.etudiant.id=:idEtudiant and p.numero=:numero and p.session.id=:idSession")
     public SemestreEtudiant findByIdEtudiantAndIdSessionAndNumero(@Param("idEtudiant") Long idEtudiant, @Param("idSession") Long idSession, @Param("numero") int numero);
+    @RestResource(path="query4")
+    @Query("select p from SemestreEtudiant  p where p.session.id=:idSession and p.numero=:numero")
+    public List<SemestreEtudiant> getAllBySessionAndNumero(@Param("idSession") Long idSession,@Param("numero") int numero);
+
 }
