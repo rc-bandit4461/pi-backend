@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+//@ToString
 @AllArgsConstructor
 public class NoteExamen implements Serializable {
     @Id

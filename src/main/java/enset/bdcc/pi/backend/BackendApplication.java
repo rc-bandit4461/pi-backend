@@ -29,6 +29,8 @@ public class BackendApplication implements CommandLineRunner {
 
 
     @Autowired
+    private DemandeReleveRepository demandeReleveRepository;
+    @Autowired
     private RepositoryRestConfiguration restConfiguration;
     @Autowired
     private EtudiantSessionRepository etudiantSessionRepository;
@@ -70,15 +72,34 @@ public class BackendApplication implements CommandLineRunner {
         restConfiguration.exposeIdsFor(Reclamation.class);
         restConfiguration.exposeIdsFor(Session.class);
         restConfiguration.exposeIdsFor(Etudiant.class);
+        restConfiguration.exposeIdsFor(ElementModule.class);
+        restConfiguration.exposeIdsFor(DemandeReleve.class);
         restConfiguration.exposeIdsFor(EtudiantSession.class);
 
-        preLoadEtudiants();
-        preloadEleemnts();
-        preloadDiplomes();
-        preloadFiliere1();
-        preloadFiliere2();
-        preloadSession();
+//        preLoadEtudiants();
+//        preloadEleemnts();
+//        preloadDiplomes();
+//        preloadFiliere1();
+//        preloadFiliere2();
+//        preloadSession();
+//        preloadDemandeReleves();
 
+    }
+
+    @Transactional
+    public void preloadDemandeReleves() {
+
+//        List<DemandeReleve> demandeReleveList = new ArrayList<>();
+//        List<Etudiant> etudiantList =  etudiantRepository.findAll();
+//        for (Etudiant etudiant : etudiantList) {
+//
+//            Etudiant etud = etudiantRepository.getOne(etudiant.getId());
+//            SemestreEtudiant semestreEtudiant = etud.getSemestreEtudiants().get(0);
+//            DemandeReleve demandeReleve = new DemandeReleve();
+//            demandeReleveList.add(demandeReleve);
+//            demandeReleve.setSemestreEtudiant(semestreEtudiant);
+//        }
+//            demandeReleveRepository.saveAll(demandeReleveList);
 
     }
 
@@ -103,7 +124,7 @@ public class BackendApplication implements CommandLineRunner {
         session.getFiliere().getSemestreFilieres().forEach(semestreFiliere -> {
             SemestreFiliere semestreSession = new SemestreFiliere(semestreFiliere.getNumero(), semestreFiliere.isDone(), session);
             semestreFiliere.getModules().forEach(sfModule -> { //sf = semestreFiliere, ss = semestreSesison
-                System.out.println("HERE IS A FUCKING SF" + sfModule.getLibelle());
+//                System.out.println("HERE IS A FUCKING SF" + sfModule.getLibelle());
                 Module ssModule = new Module(sfModule.getLibelle());
                 ssModule.setSemestreFiliere(semestreSession);
                 sfModule.getElements().forEach(element -> {
@@ -117,11 +138,11 @@ public class BackendApplication implements CommandLineRunner {
         //Ensuite on crée les semestres des étudiants et on les lient avec les modules de la session
         session.getSemestreFilieres().forEach(semestreSession -> {
             etudiantArrayList.forEach(etudiant -> {
-                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant,session,semestreSession.getNumero(),false);
+                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, session, semestreSession.getNumero(), false);
                 semestreSession.getModules().forEach(ssModule -> {
-                    NoteModule noteModule = new NoteModule(ssModule,semestreEtudiant);
+                    NoteModule noteModule = new NoteModule(ssModule, semestreEtudiant);
                     ssModule.getElements().forEach(element -> {
-                        NoteElementModule noteElementModule = new NoteElementModule(noteModule,element);
+                        NoteElementModule noteElementModule = new NoteElementModule(noteModule, element);
                         noteModule.getNoteElementModules().add(noteElementModule);
                     });
                     semestreEtudiant.getNoteModules().add(noteModule);

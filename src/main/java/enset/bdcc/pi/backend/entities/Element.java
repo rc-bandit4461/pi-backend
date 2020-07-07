@@ -25,19 +25,22 @@ import java.util.List;
 @AllArgsConstructor
 //@ToString
 public class Element implements Serializable {
-    @ManyToMany(mappedBy = "elements",cascade = CascadeType.REMOVE)
+    @ManyToMany(mappedBy = "elements", cascade = CascadeType.REMOVE)
     List<Module> modules = new ArrayList<>();
     //IMPORTANT,  PEUT CAUSER DES PROBLEMES
-    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<NoteElementModule> noteElementModules = new ArrayList<>();
-    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<Examen> examens = new ArrayList<>();
-
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // some error here? ?
+    private List<ElementModule> elementModules = new ArrayList<>();
     @Id
     @GeneratedValue
     private Long id;
     private String libelle;
-    @Column(updatable = false,name = "created_at")
+    @Transient
+    private double facteur = 1;
+    @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
     @UpdateTimestamp

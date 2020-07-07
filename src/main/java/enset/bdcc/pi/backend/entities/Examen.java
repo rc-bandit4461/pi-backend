@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+//@ToString
 @AllArgsConstructor
 public class Examen implements Serializable {
     @Column(updatable = false, name = "created_at")

@@ -13,8 +13,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @ToString
+
 public class DemandeReleve extends Demande implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "se_id")
-    SemestreEtudiant semestreEtudiant;
+
+    private SemestreEtudiant semestreEtudiant;
 }

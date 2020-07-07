@@ -42,11 +42,13 @@ public class SemestreFiliereController {
     private EtudiantSessionRepository etudiantSessionRepository;
     @Autowired
     private SemestreEtudiantRepository semestreEtudiantRepository;
+    @Autowired
+    private NoteModuleController noteModuleController;
 
     @GetMapping(value = "/toggleCloseSemestre/{id}")
     @ResponseBody
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public void toggleCloseSemestre(@PathVariable("id") Long idSemestre) {
         SemestreFiliere semestreSession = semestreFiliereRepository.getOne(idSemestre);
         boolean done = !semestreSession.isDone();
@@ -59,5 +61,64 @@ public class SemestreFiliereController {
         });
         semestreEtudiantRepository.saveAll(semestreEtudiantList);
         semestreFiliereRepository.save(semestreSession);
+    }
+
+    @GetMapping(value = "/updateSemestreNotes/{id}")
+    @ResponseBody
+    @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
+    public void updateSemestreNotesWithConsistent(@PathVariable("id") Long idSemestre) {
+        SemestreFiliere semestreSession = semestreFiliereRepository.getOne(idSemestre);
+        List<SemestreEtudiant> semestreEtudiantList = semestreEtudiantRepository.getAllBySessionAndNumero(semestreSession.getSession().getId(), semestreSession.getNumero());
+        for (SemestreEtudiant semestreEtudiant : semestreEtudiantList) {
+            semestreEtudiant.getNoteModules().forEach(noteModule -> noteModuleController.consist(noteModule));
+            updateNoteSemestre(semestreEtudiant);
+        }
+        semestreEtudiantRepository.saveAll(semestreEtudiantList);
+    }
+
+    @GetMapping(value = "/updateSemestreEtudiantNotes/{id}")
+    @ResponseBody
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void updateSemestreEtudiantNotesWithConsistent(@PathVariable("id") Long idSemestre) {
+        SemestreEtudiant semestreEtudiant = semestreEtudiantRepository.getOne(idSemestre);
+        semestreEtudiant.getNoteModules().forEach(noteModule -> noteModuleController.consist(noteModule));
+        updateNoteSemestre(semestreEtudiant);
+    }
+
+    @GetMapping(value = "/updateSemestreNotes/{id}/noConsist")
+    @ResponseBody
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void updateSemestreNotesWithoutConsistent(@PathVariable("id") Long idSemestre) {
+        SemestreFiliere semestreSession = semestreFiliereRepository.getOne(idSemestre);
+        List<SemestreEtudiant> semestreEtudiantList = semestreEtudiantRepository.getAllBySessionAndNumero(semestreSession.getSession().getId(), semestreSession.getNumero());
+        for (SemestreEtudiant semestreEtudiant : semestreEtudiantList) {
+            updateNoteSemestre(semestreEtudiant);
+        }
+    }
+
+    @GetMapping(value = "/updateSemestreEtudiantNotes/{id}/noConsist")
+    @ResponseBody
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void updateSemestreEtudiantNotesWithoutConsistent(@PathVariable("id") Long idSemestre) {
+        SemestreEtudiant semestreEtudiant = semestreEtudiantRepository.getOne(idSemestre);
+        updateNoteSemestre(semestreEtudiant);
+    }
+
+
+    @Transactional
+    public void updateNoteSemestre(SemestreEtudiant semestreEtudiant) {
+        float note = 0;
+        float facteur = 0;
+        for (NoteModule noteModule : semestreEtudiant.getNoteModules()) {
+            float max = Math.max(noteModule.getNoteNormale(), Math.max(noteModule.getNoteDeliberation(), noteModule.getNoteRatt()));
+            note += max * noteModule.getModule().getFacteur();
+            facteur += noteModule.getModule().getFacteur();
+        }
+        note /= facteur;
+        semestreEtudiant.setNote(note);
     }
 }

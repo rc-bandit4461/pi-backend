@@ -35,7 +35,10 @@ public class Module implements Serializable {
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "module")
+    private List<ElementModule> elementModules = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "module")
     private List<Examen> examens = new ArrayList<>();
+    private double facteur = 1;
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "module_element",
             joinColumns = @JoinColumn(name = "module_id"),

@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
+//@ToString
 public class Filiere implements Serializable {
     @Id
     @GeneratedValue

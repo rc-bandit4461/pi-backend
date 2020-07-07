@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 
-@ToString
+//@ToString
 public class NoteModule implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -46,7 +46,7 @@ public class NoteModule implements Serializable {
     private boolean isRatt = false;
     @Column(name = "is_consistent")
     @JsonProperty("is_consistent")
-    private boolean isConsistent = false;
+    private boolean isConsistent = true;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date

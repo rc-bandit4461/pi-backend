@@ -21,6 +21,9 @@ public interface EtudiantSessionRepository extends JpaRepository<EtudiantSession
     @RestResource(path = "/bySession")
     @Query("select p from EtudiantSession p where p.id.sessionId=:id")
     public List<EtudiantSession> getBySessionId(@Param("id") Long id);
+      @RestResource(path = "/bySessionAndEtudiant")
+    @Query("select p from EtudiantSession p where p.id.sessionId=:idSession and p.id.etudiantId=:idEtudiant")
+    public EtudiantSession getBySessionIdAndEtudiantId(@Param("idSession") Long idSession,@Param("idEtudiant") Long idEtudiant);
 
 
 }

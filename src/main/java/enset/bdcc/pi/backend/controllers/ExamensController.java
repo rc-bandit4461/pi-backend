@@ -48,7 +48,8 @@ public class ExamensController {
     private EtudiantSessionRepository etudiantSessionRepository;
     @Autowired
     private SemestreEtudiantRepository semestreEtudiantRepository;
-
+    @Autowired
+    private NoteModuleController noteModuleController;
     @PostMapping(value = "/saveExamen")
     @Transactional
     @ResponseBody
@@ -66,10 +67,12 @@ public class ExamensController {
             SemestreEtudiant semestreEtudiant = semestreEtudiantRepository.findByIdEtudiantAndIdSessionAndNumero(noteEtudiant.getEtudiant().getId(), session.getId(), module.getSemestreFiliere().getNumero());
             NoteModule noteModule = noteModuleRepository.getByModuleIdAndSEId(semestreEtudiant.getId(), module.getId());
             NoteElementModule noteElementModule = noteElementModuleRepository.getByElementAndNoteModule(examen.getElement().getId(), noteModule.getId());
-            noteElementModule.setConsistent(false);
-            noteModule.setConsistent(false);
-            noteModuleRepository.save(noteModule);
-            noteElementModuleRepository.save(noteElementModule);
+//            noteElementModule.setConsistent(false);
+//            noteModule.setConsistent(false);
+
+//            noteModuleRepository.save(noteModule);
+//            noteElementModuleRepository.save(noteElementModule);
+            noteModuleList.add(noteModule);
 //            if(!noteElementModules.contains(noteElementModule)) noteElementModules.add(noteElementModule);
 //            if(!noteModuleList.contains(noteElementModule.getNoteModule())) noteModuleList.add(noteModule);
             //            if(!noteElementModule.isRatt() && examen.isRatt()) noteElementModule.setRatt(examen.isRatt()); //should we leave it?
@@ -78,7 +81,11 @@ public class ExamensController {
 
             noteExamenList.add(noteExamen);
         });
+
         noteExamenRepository.saveAll(noteExamenList);
+//        for (NoteModule noteModule : noteModuleList) {
+//            noteModuleController.consisteNoteModule(noteModule.getId());
+//        }
     }
 
     @PutMapping(value = "/saveExamen")

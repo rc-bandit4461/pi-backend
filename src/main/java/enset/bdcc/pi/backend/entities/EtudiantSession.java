@@ -33,9 +33,10 @@ public class EtudiantSession implements Serializable {
     @JoinColumn(name = "session_id")
     Session session;
     @JsonProperty("is_passed")
-    private boolean is_passed = false;
+    private boolean isPassed = false;
     @JsonProperty("is_dropped")
-    private boolean is_dropped = false;
+    private boolean isDropped = false;
+    private float note = 0;
     @Column(updatable = false,name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date

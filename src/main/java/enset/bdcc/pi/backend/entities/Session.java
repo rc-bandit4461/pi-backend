@@ -1,5 +1,6 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -24,7 +25,10 @@ import java.util.List;
 public class Session implements Serializable {
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
+    @Transient
+    List<Etudiant> etudiants;
     @Id
     @GeneratedValue
     private Long id;
@@ -39,15 +43,16 @@ public class Session implements Serializable {
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session")
+    @JsonIgnore
     private List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
-        @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session")
+    @JsonIgnore
     private List<SemestreFiliere> semestreFilieres = new ArrayList<>();
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize created date
-    @Transient
-    List<Etudiant> etudiants;
+
     public Session(int annee, Filiere filiere) {
         this.annee = annee;
         this.filiere = filiere;

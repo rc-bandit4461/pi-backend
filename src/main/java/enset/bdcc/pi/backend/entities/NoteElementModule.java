@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @AllArgsConstructor
-@ToString
+//@ToString
 public class NoteElementModule implements Serializable {
 
     @ManyToOne
@@ -47,7 +47,7 @@ public class NoteElementModule implements Serializable {
     private float facteur = 1;
     @Column(name = "is_consistent")
     @JsonProperty("is_consistent")
-    private boolean isConsistent = false;
+    private boolean isConsistent = true;
     @Column(name = "is_ratt")
     @JsonProperty("is_ratt")
     private boolean isRatt = false;
@@ -57,7 +57,9 @@ public class NoteElementModule implements Serializable {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "elementModule")
+    private ElementModule elementModule;
     public NoteElementModule(NoteModule noteModule, Element element) {
         this.noteModule = noteModule;
         this.element = element;

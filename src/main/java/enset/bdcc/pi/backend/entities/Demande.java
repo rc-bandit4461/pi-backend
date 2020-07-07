@@ -22,7 +22,6 @@ import java.util.Date;
 public abstract class Demande implements Serializable {
     @Id
     @GeneratedValue
-
     protected Long id;
     @Column(name = "is_done")
     protected boolean isDone = false;
