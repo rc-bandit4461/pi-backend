@@ -21,12 +21,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
+//@ToString
 public class Filiere implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
     private String libelle;
+    private String description;
+    private int nbr_semestres;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
@@ -35,15 +37,21 @@ public class Filiere implements Serializable {
     private Date updatedAt; // initialize updated date
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "filiere")
     private List<Session> sessions = new ArrayList<>();
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "filiere",cascade = CascadeType.PERSIST,orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "filiere", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<SemestreFiliere> semestreFilieres = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Diplome diplome;
+
 
     public Filiere(String libelle, List<SemestreFiliere> list) {
         this.libelle = libelle;
         this.semestreFilieres = list;
     }
 
-    public Filiere(String libelle) {
+    public Filiere(String libelle, String description,int nbr_semestres, Diplome diplome) {
         this.libelle = libelle;
+        this.nbr_semestres = nbr_semestres;
+        this.description = description;
+        this.diplome = diplome;
     }
 }

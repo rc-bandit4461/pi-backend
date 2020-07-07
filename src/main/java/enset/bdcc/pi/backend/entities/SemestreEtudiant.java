@@ -1,5 +1,6 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,26 +18,29 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Setter
-@ToString
+//@ToString
 public class SemestreEtudiant extends Semestre implements Serializable {
-//        @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
-//    List<DemandeReleve> demandeReleves;
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant")
-//    List<Examen> examenList;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant",cascade = CascadeType.ALL)
-    List<NoteModule> noteModules =  new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    List<DemandeReleve> demandeReleves;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant", cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<NoteModule> noteModules = new ArrayList<>();
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "session_id")
     private Session session;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id")
     private Etudiant etudiant;
+    private float note = 0;
 
     public SemestreEtudiant(int numero, boolean isDone) {
         super(numero, isDone);
     }
-    public SemestreEtudiant(Etudiant etudiant,Session session,int numero, boolean isDone) {
+
+    public SemestreEtudiant(Etudiant etudiant, Session session, int numero, boolean isDone) {
         super(numero, isDone);
-        this.etudiant = etudiant;this.session = session;
+        this.etudiant = etudiant;
+        this.session = session;
     }
 }

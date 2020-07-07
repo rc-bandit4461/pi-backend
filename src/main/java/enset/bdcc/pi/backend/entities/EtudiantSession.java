@@ -1,5 +1,6 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +32,11 @@ public class EtudiantSession implements Serializable {
     @MapsId("session_id")
     @JoinColumn(name = "session_id")
     Session session;
-    private boolean is_passed = false;
+    @JsonProperty("is_passed")
+    private boolean isPassed = false;
+    @JsonProperty("is_dropped")
+    private boolean isDropped = false;
+    private float note = 0;
     @Column(updatable = false,name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date

@@ -1,5 +1,8 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,24 +24,30 @@ import java.util.List;
 @ToString
 public class Session implements Serializable {
     @Column(name = "etud_session")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
+    @Transient
+    List<Etudiant> etudiants;
     @Id
     @GeneratedValue
     private Long id;
     private int annee;
+    private int annee_courante = 1;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "filiere_id")
     private Filiere filiere;
-    private boolean is_done = false;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "session",cascade = CascadeType.REMOVE)
-    private List<Reclamation> reclamations;
+    @JsonProperty("is_done")
+    @Column(name = "is_done")
+    private boolean isDone = false;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
-    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "session")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session")
+    @JsonIgnore
     private List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "session")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session")
+    @JsonIgnore
     private List<SemestreFiliere> semestreFilieres = new ArrayList<>();
     @UpdateTimestamp
     @Column(name = "updated_at")
