@@ -1,5 +1,6 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -29,8 +30,10 @@ public class Etudiant implements Serializable {
     protected String password;
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
     private String cne;
     private String sexe;
@@ -38,14 +41,16 @@ public class Etudiant implements Serializable {
     private String ville_naissance;
     private String email;
     private String infos;
-    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "etudiant")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     private List<NoteExamen> examens = new ArrayList<>();
     @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Reclamation> reclamations = new ArrayList<>();
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date createdAt; // initialize created date
     @UpdateTimestamp
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
 
@@ -57,6 +62,11 @@ public class Etudiant implements Serializable {
         this.ville_naissance = ville_naissance;
         this.email = email;
         this.infos = infos;
+        this.nom = nom;
+        this.prenom = prenom;
+    }
+      public Etudiant(String cin, String prenom, String nom) {
+        this.cin = cin;
         this.nom = nom;
         this.prenom = prenom;
     }
