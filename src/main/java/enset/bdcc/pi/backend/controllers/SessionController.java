@@ -219,6 +219,15 @@ public class SessionController {
             updateEtudiantSessionStateWithoutConsist(session.getId(), etudiant.getId());
         }
     }
+     @Transactional
+    @PostMapping(value = "/updateSessionNotes/{idSession}/noConsist")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public void updateSessionNotesWithoutConsist(@PathVariable("idSession") Long idSession,@RequestBody List<Etudiant> etudiantsList) {
+        for (Etudiant etudiant : etudiantsList) {
+            updateEtudiantSessionStateWithoutConsist(idSession, etudiant.getId());
+        }
+    }
 
     @Transactional
     @GetMapping(value = "/updateSessionNotes/{idSession}/consist")
@@ -229,6 +238,15 @@ public class SessionController {
         List<Etudiant> etudiantList = etudiantRepository.getBySession(session.getId());
         for (Etudiant etudiant : etudiantList) {
             updateEtudiantSessionStateWithConsist(session.getId(), etudiant.getId());
+        }
+    }
+     @Transactional
+    @PostMapping(value = "/updateSessionNotes/{idSession}/consist")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public void updateSessionNotesWithConsist(@PathVariable("idSession") Long idSession,@RequestBody List<Etudiant> etudiantList) {
+        for (Etudiant etudiant : etudiantList) {
+            updateEtudiantSessionStateWithConsist(idSession, etudiant.getId());
         }
     }
 
