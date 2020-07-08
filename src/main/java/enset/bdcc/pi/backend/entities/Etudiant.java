@@ -65,6 +65,10 @@ public class Etudiant implements Serializable {
         this.nom = nom;
         this.prenom = prenom;
     }
+        public Etudiant(String cin, String prenom, String nom,String password, String cne, String sexe, LocalDate date_naissance, String ville_naissance, String email, String infos) {
+        this(cin,prenom,nom,cne,sexe,date_naissance,ville_naissance,email,infos);
+        this.password = password;
+    }
       public Etudiant(String cin, String prenom, String nom) {
         this.cin = cin;
         this.nom = nom;

@@ -1,5 +1,7 @@
 package enset.bdcc.pi.backend.services;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import enset.bdcc.pi.backend.dao.*;
 import enset.bdcc.pi.backend.entities.*;
 import enset.bdcc.pi.backend.entities.Module;
@@ -30,6 +32,7 @@ public class ReleveModuleDataInitialization {
     List<Diplome> diplomeList = new ArrayList<>();
     ArrayList<Etudiant> etudiantArrayList = new ArrayList<>();
     List<Session> sessionList = new ArrayList<>();
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Autowired
     private DemandeReleveRepository demandeReleveRepository;
     @Autowired
@@ -61,6 +64,7 @@ public class ReleveModuleDataInitialization {
         preloadDiplomes();
         preloadFiliere1();
         preloadFiliere2();
+
 //        preloadSession();
 //        preloadDemandeReleves();
     }
@@ -91,6 +95,12 @@ public class ReleveModuleDataInitialization {
         diplomeRepository.saveAll(diplomeList);
 
     }
+
+//    @Bean
+//    public BCryptPasswordEncoder getPasswordEncoder() {
+//        if (passwordEncoder == null) return new BCryptPasswordEncoder();
+//        return passwordEncoder;
+//    }
 
     @Transactional
     public void preloadSession() {
@@ -143,9 +153,9 @@ public class ReleveModuleDataInitialization {
 
 
     public void preLoadEtudiants() {
-        etudiantArrayList.add(new Etudiant("MA137551", "Zakaria", "Chadli", "15132215864", "homme", LocalDate.of(1997, 5, 20), "Kenitra", "zakaria.chadli@gmail.com", "dickhead"));
-        etudiantArrayList.add(new Etudiant("RP137552", "Hamza", "Gueddi", "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Salé", "hamza.gueddi@gmail.com", "homo"));
-        etudiantArrayList.add(new Etudiant("CA137553", "Yassine", "Faiq", "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Laayoune", "yassine.faiq@gmail.com", "simp"));
+        etudiantArrayList.add(new Etudiant("MA137551", "Zakaria",passwordEncoder.encode("123"), "Chadli", "15132215864", "homme", LocalDate.of(1997, 5, 20), "Kenitra", "zakaria.chadli@gmail.com", "dickhead"));
+        etudiantArrayList.add(new Etudiant("RP137552", "Hamza", "Gueddi",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Salé", "hamza.gueddi@gmail.com", "homo"));
+        etudiantArrayList.add(new Etudiant("CA137553", "Yassine", "Faiq",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Laayoune", "yassine.faiq@gmail.com", "simp"));
         etudiantRepository.saveAll(etudiantArrayList);
     }
 
