@@ -5,6 +5,7 @@ import enset.bdcc.pi.backend.dao.RoomRepository;
 import enset.bdcc.pi.backend.dao.*;
 import enset.bdcc.pi.backend.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -23,41 +24,44 @@ public class DataInitialization {
 
     @Autowired
     BookingRepository bookingRepository;
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
+        if (ddlAuto.equals("update")) return;
         List<Room> rooms = roomRepository.findAll();
         if (rooms.size() == 0) {
-            Room blueRoom = new Room("Salle 64","DMI 1st Floor",38,new State(true,""));
-            blueRoom.setCapacity(new LayoutCapacity(Layout.BOARD,1,blueRoom));
-            blueRoom.setCapacity(new LayoutCapacity(Layout.Projector,2,blueRoom));
-            blueRoom.setCapacity(new LayoutCapacity(Layout.PCs,16,blueRoom));
+            Room blueRoom = new Room("Salle 64", "DMI 1st Floor", 38, new State(true, ""));
+            blueRoom.setCapacity(new LayoutCapacity(Layout.BOARD, 1, blueRoom));
+            blueRoom.setCapacity(new LayoutCapacity(Layout.Projector, 2, blueRoom));
+            blueRoom.setCapacity(new LayoutCapacity(Layout.PCs, 16, blueRoom));
             roomRepository.save(blueRoom);
 
-            Room r2 = new Room("Salle 65","DMI 1st Floor",38,new State(true,""));
-            r2.setCapacity(new LayoutCapacity(Layout.BOARD,1,r2));
-            r2.setCapacity(new LayoutCapacity(Layout.Projector,2,r2));
-            r2.setCapacity(new LayoutCapacity(Layout.PCs,19,r2));
+            Room r2 = new Room("Salle 65", "DMI 1st Floor", 38, new State(true, ""));
+            r2.setCapacity(new LayoutCapacity(Layout.BOARD, 1, r2));
+            r2.setCapacity(new LayoutCapacity(Layout.Projector, 2, r2));
+            r2.setCapacity(new LayoutCapacity(Layout.PCs, 19, r2));
             roomRepository.save(r2);
 
-            Room r3 = new Room("Salle 74","DMI 2st Floor",38,new State(true,""));
-            r3.setCapacity(new LayoutCapacity(Layout.BOARD,2,r3));
-            r3.setCapacity(new LayoutCapacity(Layout.Projector,2,r3));
-            r3.setCapacity(new LayoutCapacity(Layout.PCs,20,r3));
+            Room r3 = new Room("Salle 74", "DMI 2st Floor", 38, new State(true, ""));
+            r3.setCapacity(new LayoutCapacity(Layout.BOARD, 2, r3));
+            r3.setCapacity(new LayoutCapacity(Layout.Projector, 2, r3));
+            r3.setCapacity(new LayoutCapacity(Layout.PCs, 20, r3));
             roomRepository.save(r3);
-            Room r4 = new Room("Salle 75","DMI 2st Floor",38,new State(true,""));
-            r4.setCapacity(new LayoutCapacity(Layout.BOARD,1,r4));
-            r4.setCapacity(new LayoutCapacity(Layout.Projector,1,r4));
-            r4.setCapacity(new LayoutCapacity(Layout.PCs,12,r4));
+            Room r4 = new Room("Salle 75", "DMI 2st Floor", 38, new State(true, ""));
+            r4.setCapacity(new LayoutCapacity(Layout.BOARD, 1, r4));
+            r4.setCapacity(new LayoutCapacity(Layout.Projector, 1, r4));
+            r4.setCapacity(new LayoutCapacity(Layout.PCs, 12, r4));
             roomRepository.save(r4);
-            Room r5 = new Room("Laboratoir","DMI 2st Floor",38,new State(true,""));
-            r5.setCapacity(new LayoutCapacity(Layout.BOARD,2,r5));
-            r5.setCapacity(new LayoutCapacity(Layout.Projector,2,r5));
-            r5.setCapacity(new LayoutCapacity(Layout.PCs,2,r5));
+            Room r5 = new Room("Laboratoir", "DMI 2st Floor", 38, new State(true, ""));
+            r5.setCapacity(new LayoutCapacity(Layout.BOARD, 2, r5));
+            r5.setCapacity(new LayoutCapacity(Layout.Projector, 2, r5));
+            r5.setCapacity(new LayoutCapacity(Layout.PCs, 2, r5));
             roomRepository.save(r5);
 
 
-            Etudiant user = new Etudiant("JK77777","Yassir","BOURAS");
+            Etudiant user = new Etudiant("JK77777", "Yassir", "BOURAS");
             etudiantRepository.save(user);
 
             Booking booking1 = new Booking();

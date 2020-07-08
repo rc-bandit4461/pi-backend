@@ -4,6 +4,7 @@ import enset.bdcc.pi.backend.dao.*;
 import enset.bdcc.pi.backend.entities.*;
 import enset.bdcc.pi.backend.entities.Module;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,9 +19,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 @Service
 public class ReleveModuleDataInitialization {
-     List<Element> semestre1Elements = new ArrayList<>();
+    List<Element> semestre1Elements = new ArrayList<>();
     List<Element> semestre2Elements = new ArrayList<>();
     List<Element> semestre3Elements = new ArrayList<>();
     List<Element> semestre4Elements = new ArrayList<>();
@@ -48,16 +50,20 @@ public class ReleveModuleDataInitialization {
     private DiplomeRepository diplomeRepository;
     @Autowired
     private SessionRepository sessionRepository;
-        @EventListener(ApplicationReadyEvent.class)
-        public void initData(){
-                    preLoadEtudiants();
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void initData() {
+        if (ddlAuto.equals("update")) return;
+        preLoadEtudiants();
         preloadElemnts();
         preloadDiplomes();
         preloadFiliere1();
         preloadFiliere2();
 //        preloadSession();
 //        preloadDemandeReleves();
-        }
+    }
 
     @Transactional
     public void preloadDemandeReleves() {

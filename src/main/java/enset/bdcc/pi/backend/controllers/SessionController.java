@@ -1,5 +1,7 @@
 package enset.bdcc.pi.backend.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import enset.bdcc.pi.backend.dao.*;
 import enset.bdcc.pi.backend.entities.*;
 import enset.bdcc.pi.backend.entities.Module;
@@ -13,6 +15,7 @@ import javax.transaction.Transactional;
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin("*")
 @RestController
@@ -237,5 +240,77 @@ public class SessionController {
         Session session = sessionRepository.getOne(idSession);
         session.setDone(!session.isDone());
         sessionRepository.save(session);
+    }
+    @Transactional
+    @PutMapping(value="/saveSession")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public void putSession(@RequestBody Session session) throws JsonProcessingException {
+        Session toUpdateSession = sessionRepository.getOne(session.getId());
+        List<EtudiantSession> etudiantSessionList = new ArrayList<>();
+        List<Etudiant> etudiantArrayList = new ArrayList<>();
+              ObjectMapper mapper = new ObjectMapper();
+              List<SemestreEtudiant> semestreEtudiantList = new ArrayList<>();
+      //Converting the Object to JSONString
+      String jsonString = mapper.writeValueAsString(session);
+      System.out.println(jsonString);
+        for(EtudiantSession etudiantSession:session.getEtudiantSessions()){
+//         boolean exists =  etudiantSessionRepository.existsById(new EtudiantSessionKey(etudiantSession.getId().getEtudiantId(),etudiantSession.getId().getSessionId()));
+         Optional<EtudiantSession> etudiantSession1 =  etudiantSessionRepository.findById(new EtudiantSessionKey(etudiantSession.getId().getEtudiantId(),etudiantSession.getId().getSessionId()));
+                    if(etudiantSession1.isEmpty()) {
+                        Etudiant etudiant = etudiantRepository.getOne(etudiantSession.getId().getEtudiantId());
+                        etudiantArrayList.add(etudiant);
+                    }
+                    else {
+                        etudiantSession1.get().setDropped(etudiantSession.isDropped());
+                        etudiantSessionList.add(etudiantSession1.get());
+                    }
+        }
+
+
+                toUpdateSession.getSemestreFilieres().forEach(semestreSession -> {
+            for (Etudiant etudiant : etudiantArrayList) {
+                SemestreEtudiant semestreEtudiant = new SemestreEtudiant(etudiant, toUpdateSession, semestreSession.getNumero(), false);
+                for (Module ssModule : semestreSession.getModules()) {
+                    NoteModule noteModule = new NoteModule(ssModule, semestreEtudiant);
+//                    ssModule.getElements().forEach(element -> {
+//                        NoteElementModule noteElementModule = new NoteElementModule(noteModule, element);
+//
+//                        noteModule.getNoteElementModules().add(noteElementModule);
+//                    });
+                    for (ElementModule elementModule : ssModule.getElementModules()) {
+                        NoteElementModule noteElementModule = new NoteElementModule();
+                        noteElementModule.setNoteModule(noteModule);
+                        noteElementModule.setElementModule(elementModule);
+                        noteElementModule.setElement(elementModule.getELement());
+                        noteModule.getNoteElementModules().add(noteElementModule);
+
+                    }
+                    semestreEtudiant.getNoteModules().add(noteModule);
+                }
+//                etudiant.getSemestreEtudiants().add(semestreEtudiant);
+//                toUpdateSession.getSemestreEtudiants().add(semestreEtudiant);
+                semestreEtudiantList.add(semestreEtudiant);
+            }
+        });
+        toUpdateSession.setAnnee(session.getAnnee());
+        toUpdateSession.setAnnee_courante(session.getAnnee_courante());
+        sessionRepository.save(toUpdateSession);
+        semestreEtudiantRepository.saveAll(semestreEtudiantList);
+        //Ensuite on crée les sessions des étudiants
+        List<EtudiantSession> etudiantSessions = new ArrayList<>();
+        for (Etudiant etudiant : etudiantArrayList) {
+            EtudiantSession etudiantSession = new EtudiantSession(etudiant, toUpdateSession);
+            etudiantSessions.add(etudiantSession);
+        }
+        etudiantSessionRepository.saveAll(etudiantSessions);
+    }
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(path = "/deleteEtudiantSession/{idSession}/{idEtudiant}")
+    public void deleteEtudiantSession(@PathVariable("idSession") Long idSession,@PathVariable("idEtudiant") Long idEtudiant){
+        EtudiantSession etudiantSession = etudiantSessionRepository.getBySessionIdAndEtudiantId(idSession,idEtudiant);
+        etudiantSessionRepository.delete(etudiantSession);
+        semestreEtudiantRepository.deleteAll(semestreEtudiantRepository.findByIdEtudiantAndIdSession(idEtudiant,idSession));
     }
 }

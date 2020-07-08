@@ -25,7 +25,6 @@ import java.util.List;
 public class Session implements Serializable {
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
     @Transient
     List<Etudiant> etudiants;

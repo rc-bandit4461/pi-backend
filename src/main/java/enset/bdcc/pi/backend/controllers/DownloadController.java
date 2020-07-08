@@ -16,16 +16,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 @CrossOrigin("*")
 @RestController
-public class Example1Controller {
+public class DownloadController {
 
     private static final String DIRECTORY = "src/main/resources/static/templates";
     private static final String DEFAULT_FILE_NAME = "attestationReussiteTemplate.docx";
 
     @Autowired
     private ServletContext servletContext;
-
-    // http://localhost:8080/download1?fileName=abc.zip
-    // Using ResponseEntity<InputStreamResource>
     @GetMapping("/download")
     public ResponseEntity<InputStreamResource> downloadFile1(
             @RequestParam(defaultValue = DEFAULT_FILE_NAME) String fileName) throws IOException, FileNotFoundException {
