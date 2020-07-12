@@ -57,6 +57,7 @@ public class SemestreFiliereController {
         semestreSession.setDone(done);
         List<SemestreEtudiant> semestreEtudiantList = semestreEtudiantRepository.getAllBySessionAndNumero(session.getId(), semestreSession.getNumero());
         semestreEtudiantList.forEach(semestreEtudiant -> {
+            System.out.println("YES FOUND ---> " + semestreEtudiant.getId());
             semestreEtudiant.setDone(done);
         });
         semestreEtudiantRepository.saveAll(semestreEtudiantList);

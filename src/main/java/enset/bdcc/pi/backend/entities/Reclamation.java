@@ -19,9 +19,10 @@ public class Reclamation extends Demande implements Serializable {
     @JoinColumn(name = "student_id")
     private Etudiant etudiant;
 
-    private String detail;
+
 
     public Reclamation(String detail) {
+        this.type = Demande.TYPE_RECLAMATION;
         this.detail = detail;
     }
 

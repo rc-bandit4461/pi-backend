@@ -7,8 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.beans.Transient;
 import java.time.LocalDate;
@@ -20,7 +25,6 @@ import java.util.List;
 public class BackendApplication implements CommandLineRunner {
 
 
-
     @Autowired
     private RepositoryRestConfiguration restConfiguration;
 
@@ -30,11 +34,13 @@ public class BackendApplication implements CommandLineRunner {
     }
 
     @Override
+//    @PostConstruct
     public void run(String... args) throws Exception {
 
         restConfiguration.exposeIdsFor(Element.class);
         restConfiguration.exposeIdsFor(Diplome.class);
         restConfiguration.exposeIdsFor(Module.class);
+        restConfiguration.exposeIdsFor(User.class);
         restConfiguration.exposeIdsFor(Examen.class);
         restConfiguration.exposeIdsFor(NoteExamen.class);
         restConfiguration.exposeIdsFor(NoteModule.class);
@@ -42,6 +48,7 @@ public class BackendApplication implements CommandLineRunner {
         restConfiguration.exposeIdsFor(Filiere.class);
         restConfiguration.exposeIdsFor(SemestreFiliere.class);
         restConfiguration.exposeIdsFor(SemestreEtudiant.class);
+        restConfiguration.exposeIdsFor(DemandeAttestation.class);
         restConfiguration.exposeIdsFor(DemandeReleve.class);
         restConfiguration.exposeIdsFor(Reclamation.class);
         restConfiguration.exposeIdsFor(Session.class);
@@ -51,8 +58,8 @@ public class BackendApplication implements CommandLineRunner {
         restConfiguration.exposeIdsFor(EtudiantSession.class);
 
 
-
     }
+
 
 
 

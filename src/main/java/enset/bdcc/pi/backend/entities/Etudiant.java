@@ -19,15 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Etudiant implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+public class Etudiant extends User implements Serializable {
+
+
     @Column(unique = true)
     protected String cin;
-    protected String nom;
-    protected String prenom;
-    protected String password;
+    protected String cne;
+
+   protected LocalDate date_naissance;
+    protected String ville_naissance;
+
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -35,12 +36,9 @@ public class Etudiant implements Serializable {
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     List<SemestreEtudiant> semestreEtudiants = new ArrayList<>();
-    private String cne;
-    private String sexe;
-    private LocalDate date_naissance;
-    private String ville_naissance;
-    private String email;
-    private String infos;
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant", fetch = FetchType.LAZY)
+    List<DemandeAttestation> demandeAttestations = new ArrayList<>();
+
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     private List<NoteExamen> examens = new ArrayList<>();
     @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -65,11 +63,13 @@ public class Etudiant implements Serializable {
         this.nom = nom;
         this.prenom = prenom;
     }
-        public Etudiant(String cin, String prenom, String nom,String password, String cne, String sexe, LocalDate date_naissance, String ville_naissance, String email, String infos) {
-        this(cin,prenom,nom,cne,sexe,date_naissance,ville_naissance,email,infos);
+
+    public Etudiant(String cin, String prenom, String nom, String password, String cne, String sexe, LocalDate date_naissance, String ville_naissance, String email, String infos) {
+        this(cin, prenom, nom, cne, sexe, date_naissance, ville_naissance, email, infos);
         this.password = password;
     }
-      public Etudiant(String cin, String prenom, String nom) {
+
+    public Etudiant(String cin, String prenom, String nom) {
         this.cin = cin;
         this.nom = nom;
         this.prenom = prenom;

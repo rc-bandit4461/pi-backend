@@ -23,9 +23,12 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class Session implements Serializable {
+
     @Column(name = "etud_session")
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
     List<EtudiantSession> etudiantSessions = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "session", orphanRemoval = true, fetch = FetchType.LAZY)
+    List<DemandeAttestation> demandeAttestations = new ArrayList<>();
     @Transient
     List<Etudiant> etudiants;
     @Id

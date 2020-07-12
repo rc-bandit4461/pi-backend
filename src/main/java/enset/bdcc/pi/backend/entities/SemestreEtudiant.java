@@ -21,7 +21,7 @@ import java.util.List;
 //@ToString
 public class SemestreEtudiant extends Semestre implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant", cascade = CascadeType.REMOVE)
-    @JsonIgnore
+//    @JsonIgnore
     List<DemandeReleve> demandeReleves;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "semestreEtudiant", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -33,6 +33,9 @@ public class SemestreEtudiant extends Semestre implements Serializable {
     @JoinColumn(name = "student_id")
     private Etudiant etudiant;
     private float note = 0;
+    private boolean canRequestReleve = true;
+    private boolean hasRequestedReleve = false;
+    private int nbrReleveRequests = 0;
 
     public SemestreEtudiant(int numero, boolean isDone) {
         super(numero, isDone);

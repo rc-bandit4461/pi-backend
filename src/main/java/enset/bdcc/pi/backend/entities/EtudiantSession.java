@@ -22,7 +22,6 @@ import java.util.Date;
 @ToString
 public class EtudiantSession implements Serializable {
     @EmbeddedId
-
     EtudiantSessionKey id;
     @ManyToOne
     @MapsId("student_id")
@@ -36,6 +35,12 @@ public class EtudiantSession implements Serializable {
     private boolean isPassed = false;
     @JsonProperty("is_dropped")
     private boolean isDropped = false;
+    private boolean canRequestGraduation = true;
+    private boolean canRequestScolarite = true;
+    private boolean hasRequestedGraduation = false;
+    private boolean hasRequestedScolarite = false;
+    private int nbrGraduationRequests = 0;
+    private int nbrScolariteRequests = 0;
     private float note = 0;
     @Column(updatable = false,name = "created_at")
     @CreationTimestamp

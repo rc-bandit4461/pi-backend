@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -32,7 +33,8 @@ public class ReleveModuleDataInitialization {
     List<Diplome> diplomeList = new ArrayList<>();
     ArrayList<Etudiant> etudiantArrayList = new ArrayList<>();
     List<Session> sessionList = new ArrayList<>();
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @Autowired
     private DemandeReleveRepository demandeReleveRepository;
     @Autowired
@@ -52,6 +54,8 @@ public class ReleveModuleDataInitialization {
     @Autowired
     private DiplomeRepository diplomeRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private SessionRepository sessionRepository;
     @Value("${spring.jpa.hibernate.ddl-auto}")
     private String ddlAuto;
@@ -59,7 +63,7 @@ public class ReleveModuleDataInitialization {
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         if (ddlAuto.equals("update")) return;
-        preLoadEtudiants();
+        preloadUsers();
         preloadElemnts();
         preloadDiplomes();
         preloadFiliere1();
@@ -88,6 +92,7 @@ public class ReleveModuleDataInitialization {
 
     @Transactional
     public void preloadDiplomes() {
+
         diplomeList.add(new Diplome("cycle_ing", "Cycle d'ingénieur", 3));
         diplomeList.add(new Diplome("cycle_mast", "Cycle Master", 2));
         diplomeList.add(new Diplome("cycle_dut", "Cycle DUT", 2));
@@ -151,12 +156,21 @@ public class ReleveModuleDataInitialization {
         etudiantSessionRepository.saveAll(etudiantSessionList);
     }
 
-
-    public void preLoadEtudiants() {
-        etudiantArrayList.add(new Etudiant("MA137551", "Zakaria",passwordEncoder.encode("123"), "Chadli", "15132215864", "homme", LocalDate.of(1997, 5, 20), "Kenitra", "zakaria.chadli@gmail.com", "dickhead"));
+    @Transactional
+    public void preloadUsers() {
+        etudiantArrayList.add(new Etudiant("MA137551", "Zakaria", "Chadli",passwordEncoder.encode("123"), "15132215864", "homme", LocalDate.of(1997, 5, 20), "Kenitra", "zakaria.chadli@gmail.com", "dickhead"));
         etudiantArrayList.add(new Etudiant("RP137552", "Hamza", "Gueddi",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Salé", "hamza.gueddi@gmail.com", "homo"));
         etudiantArrayList.add(new Etudiant("CA137553", "Yassine", "Faiq",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Laayoune", "yassine.faiq@gmail.com", "simp"));
         etudiantRepository.saveAll(etudiantArrayList);
+        User user  = new User();
+        user.setEmail("admin");
+        user.setPassword("admin");
+        user.setNom("admin");
+        user.setPrenom("admin");
+        user.setSexe("Male");
+        user.setRole(User.ROLE_ADMIN);
+        userRepository.save(user);
+
     }
 
     public void preloadElemnts() {
