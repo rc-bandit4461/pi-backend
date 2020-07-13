@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -31,4 +33,6 @@ public class User implements Serializable {
     protected String nom;
     protected String prenom;
     protected String infos;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    protected List<Reclamation> reclamations = new ArrayList<>();
 }

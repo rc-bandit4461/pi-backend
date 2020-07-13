@@ -15,10 +15,10 @@ import java.io.Serializable;
 @Entity
 @ToString
 public class Reclamation extends Demande implements Serializable {
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "student_id")
-    private Etudiant etudiant;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    private String feedback;
 
 
     public Reclamation(String detail) {

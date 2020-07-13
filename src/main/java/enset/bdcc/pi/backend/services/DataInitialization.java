@@ -1,4 +1,5 @@
 package enset.bdcc.pi.backend.services;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import enset.bdcc.pi.backend.dao.BookingRepository;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,7 +27,8 @@ public class DataInitialization {
     EtudiantRepository etudiantRepository;
 
 
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @Autowired
     BookingRepository bookingRepository;
     @Value("${spring.jpa.hibernate.ddl-auto}")
@@ -65,7 +68,7 @@ public class DataInitialization {
             roomRepository.save(r5);
 
 
-        Etudiant user = new Etudiant("ST12486", "Yassir", "BOURAS",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1998, 4, 7), "Casablanca", "yassir.bouras@gmail.com", "Pervert");
+            Etudiant user = new Etudiant("ST12486", "Yassir", "BOURAS", passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1998, 4, 7), "Casablanca", "yassir.bouras@gmail.com", "Pervert");
             etudiantRepository.save(user);
 
             Booking booking1 = new Booking();

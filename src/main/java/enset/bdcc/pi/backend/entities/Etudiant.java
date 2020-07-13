@@ -41,8 +41,7 @@ public class Etudiant extends User implements Serializable {
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     private List<NoteExamen> examens = new ArrayList<>();
-    @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Reclamation> reclamations = new ArrayList<>();
+
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
