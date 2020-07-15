@@ -1,5 +1,6 @@
 package enset.bdcc.pi.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,10 @@ import java.util.List;
 @ToString
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_id")
-    private int id;
+    @GeneratedValue
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    @Column(name = "room_id")
+    private Long id;
 
     private String name;
 

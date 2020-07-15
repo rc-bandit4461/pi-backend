@@ -9,9 +9,9 @@ import java.sql.Date;
 @NoArgsConstructor
 public class BookingCommand {
 
-    private int id;
+    private Long id;
     private Room room;
-    private Etudiant user;
+    private User user;
     private String title;
     private Date date;
     private String startTime;

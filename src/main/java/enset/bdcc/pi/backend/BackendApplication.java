@@ -44,6 +44,7 @@ public class BackendApplication implements CommandLineRunner {
         restConfiguration.exposeIdsFor(Examen.class);
         restConfiguration.exposeIdsFor(NoteExamen.class);
         restConfiguration.exposeIdsFor(NoteModule.class);
+        restConfiguration.exposeIdsFor(Booking.class);
         restConfiguration.exposeIdsFor(NoteElementModule.class);
         restConfiguration.exposeIdsFor(Filiere.class);
         restConfiguration.exposeIdsFor(SemestreFiliere.class);
@@ -56,6 +57,7 @@ public class BackendApplication implements CommandLineRunner {
         restConfiguration.exposeIdsFor(ElementModule.class);
         restConfiguration.exposeIdsFor(DemandeReleve.class);
         restConfiguration.exposeIdsFor(EtudiantSession.class);
+        restConfiguration.exposeIdsFor(Room.class);
 
 
     }

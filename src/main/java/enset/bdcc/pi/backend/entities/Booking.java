@@ -16,7 +16,7 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
@@ -24,13 +24,13 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Etudiant user;
+    private User user;
     private String title;
     private Date date;
     private Time startTime;
     private Time endTime;
 
-    public Booking(Room room, Etudiant user, String title, Date date, Time startTime, Time endTime) {
+    public Booking(Room room, User user, String title, Date date, Time startTime, Time endTime) {
         this.room = room;
         this.user = user;
         this.title = title;

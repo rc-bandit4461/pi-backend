@@ -13,6 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ public class DataInitialization {
     BookingRepository bookingRepository;
     @Value("${spring.jpa.hibernate.ddl-auto}")
     private String ddlAuto;
-
+    @Transactional
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         if (ddlAuto.equals("update")) return;

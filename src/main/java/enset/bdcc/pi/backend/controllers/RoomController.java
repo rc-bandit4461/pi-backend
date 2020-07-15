@@ -3,6 +3,7 @@ package enset.bdcc.pi.backend.controllers;
 import enset.bdcc.pi.backend.ApiClass.ApiRoom;
 import enset.bdcc.pi.backend.dao.EtudiantRepository;
 import enset.bdcc.pi.backend.dao.RoomRepository;
+import enset.bdcc.pi.backend.dao.UserRepository;
 import enset.bdcc.pi.backend.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin("*")
 public class RoomController {
 	
 	@Autowired
@@ -19,14 +20,16 @@ public class RoomController {
 	
 	@Autowired
 	private EtudiantRepository etudiantRepository;
+	@Autowired
+	private UserRepository userRepository;
 	
 	@DeleteMapping("/deleteUser/{id}")
-	public void deleteEtudient(@PathVariable("id")Long id) {
-		etudiantRepository.deleteById(id);
+	public void deleteUser(@PathVariable("id")Long id) {
+		userRepository.deleteById(id);
 	}
 	
 	@DeleteMapping("/deleteRoom/{id}")
-	public void deleteRoom(@PathVariable("id") int id) {
+	public void deleteRoom(@PathVariable("id") long id) {
 		 roomRepository.deleteById(id);
 	}
 	
@@ -36,7 +39,7 @@ public class RoomController {
 	}
 	
 	@GetMapping("/room/{id}")
-	public ApiRoom getRoom(@PathVariable("id") int id) {
+	public ApiRoom getRoom(@PathVariable("id") long id) {
 		Room r1=roomRepository.findById(id).get();
 		ApiRoom room=new ApiRoom();
 		room.setId(r1.getId());
@@ -64,7 +67,7 @@ public class RoomController {
 	}
 	
 	@PutMapping(value="/room/{id}")
-	public Room updateRoom(@PathVariable("id") int id, @RequestBody ApiRoom r1) {
+	public Room updateRoom(@PathVariable("id") Long id, @RequestBody ApiRoom r1) {
 		Room room=roomRepository.findById(id).get();
 		room.setName(r1.getName());
 		room.setLocation(r1.getLocation());

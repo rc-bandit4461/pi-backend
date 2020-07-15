@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ApiRoom {
-    public int id;
+    public Long id;
     public String name;
     public String location;
     public int seats;

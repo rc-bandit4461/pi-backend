@@ -12,13 +12,13 @@ import java.util.List;
 
 @RepositoryRestResource
 @CrossOrigin("*")
-public interface BookingRepository extends JpaRepository<Booking, Integer> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByDate(Date date);
-    List<Booking> findByRoom_IdAndDateAndStartTimeBetween(int id, Date date, Time start, Time end);
-    List<Booking> findByRoom_IdAndDateAndStartTimeIsLessThanEqualAndEndTimeIsGreaterThanEqual(int id, Date date, Time start, Time start1);
+    List<Booking> findByRoom_IdAndDateAndStartTimeBetween(Long id, Date date, Time start, Time end);
+    List<Booking> findByRoom_IdAndDateAndStartTimeIsLessThanEqualAndEndTimeIsGreaterThanEqual(Long id, Date date, Time start, Time start1);
 
     @Query(value = "FROM Booking b WHERE b.date = ?1 and b.room_id = ?2 and ( ?3 BETWEEN b.startTime AND  b.endTime\r\n" +
             "    OR\r\n" +
             "    b.start_time BETWEEN ?3 AND ?4)", nativeQuery = true)
-    List<Object[]> getConfirmedReservations(Date date, int room_id, Time start_time, Time end_time);
+    List<Object[]> getConfirmedReservations(Date date, Long room_id, Time start_time, Time end_time);
 }
