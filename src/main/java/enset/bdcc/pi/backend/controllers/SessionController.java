@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.beans.Transient;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,8 @@ public class SessionController {
     private ElementModuleRepository elementModuleRepository;
     @Autowired
     private SemestreEtudiantRepository semestreEtudiantRepository;
+    @Autowired
+    private  AttestationScolariteController attestationScolariteController;
     @Autowired
     private SemestreFiliereController semestreFiliereController;
 
@@ -136,7 +139,9 @@ public class SessionController {
             EtudiantSession etudiantSession = new EtudiantSession(etudiant, toCreateSession);
             etudiantSessions.add(etudiantSession);
         }
+
         etudiantSessionRepository.saveAll(etudiantSessions);
+        attestationScolariteController.initAttestations(toCreateSession, LocalDate.now().getYear());
         Session session1 = new Session();
         session1.setId(toCreateSession.getId());
         return session1;

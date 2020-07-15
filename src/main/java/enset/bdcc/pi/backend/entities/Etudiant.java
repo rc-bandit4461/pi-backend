@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Etudiant extends User implements Serializable {
     protected String cin;
     protected String cne;
 
-   protected LocalDate date_naissance;
+    protected LocalDate date_naissance;
     protected String ville_naissance;
 
     @Column(name = "etud_session")
@@ -41,7 +42,12 @@ public class Etudiant extends User implements Serializable {
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "etudiant")
     private List<NoteExamen> examens = new ArrayList<>();
-
+    @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<ReclamAttestation> reclamAttestations = new ArrayList<>();
+    @OneToMany(mappedBy = "etudiant")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Collection<Attestation_scolarite> attestations;
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

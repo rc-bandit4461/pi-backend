@@ -18,8 +18,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.beans.Transient;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +38,9 @@ public class ReleveModuleDataInitialization {
     List<Session> sessionList = new ArrayList<>();
     @Autowired
     PasswordEncoder passwordEncoder;
+    String libele_year = "";
+    @Autowired
+    private AttestationScolariteRepository attestationRepository;
     @Autowired
     private DemandeReleveRepository demandeReleveRepository;
     @Autowired
@@ -68,7 +74,8 @@ public class ReleveModuleDataInitialization {
         preloadDiplomes();
         preloadFiliere1();
         preloadFiliere2();
-
+        System.out.println("Date :" + Calendar.getInstance().get(Calendar.YEAR));
+//        initAttestations(Calendar.getInstance().get(Calendar.YEAR));
 //        preloadSession();
 //        preloadDemandeReleves();
     }
@@ -88,6 +95,47 @@ public class ReleveModuleDataInitialization {
 //        }
 //            demandeReleveRepository.saveAll(demandeReleveList);
 
+    }
+
+    @Transactional
+    public void initAttestations(int year) {
+
+        Session session = sessionRepository.findById((long) 45).get();
+        System.out.println("Annee session : " + session.getAnnee());
+        if (session.getAnnee() == year) {
+            etudiantSessionRepository.findAll().forEach(etudse -> {
+                Attestation_scolarite attestation = new Attestation_scolarite();
+                attestation.setCodeEtudiant(etudse.getEtudiant().getId());
+                attestation.setNomComplet(etudse.getEtudiant().getNom() + " " + etudse.getEtudiant().getPrenom());
+                attestation.setCin(etudse.getEtudiant().getCin());
+                attestation.setCne(etudse.getEtudiant().getCne());
+                try {
+                    attestation.setDate_naissance(new SimpleDateFormat("yyyy-MM-dd").parse(etudse.getEtudiant().getDate_naissance().toString()));
+                    attestation.setVille_naissance(etudse.getEtudiant().getVille_naissance());
+                    attestation.setAnnee_session(etudse.getSession().getAnnee() + "/" + Integer.toString(etudse.getSession().getAnnee() + 1));
+                    switch (etudse.getSession().getAnnee_courante()) {
+                        case 1:
+                            libele_year = " ère année";
+                            break;
+                        case 2:
+                            libele_year = " ème année";
+                            break;
+                        default:
+                            libele_year = " ème année";
+                            break;
+                    }
+                    attestation.setAnnee_univers(Integer.toString(etudse.getSession().getAnnee_courante()) + libele_year + " " + etudse.getSession().getFiliere().getDiplome().getDescription() + " : " + etudse.getSession().getFiliere().getDescription());
+                    attestation.setType_diplome("Fl. " + etudse.getSession().getFiliere().getDiplome().getDescription().replace("Cycle ", "") + " ." + etudse.getSession().getFiliere().getLibelle());
+                    attestation.setEtudiant(etudse.getEtudiant());
+                    attestationRepository.save(attestation);
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            System.out.println("Impossible !!");
+        }
     }
 
     @Transactional
@@ -158,11 +206,11 @@ public class ReleveModuleDataInitialization {
 
     @Transactional
     public void preloadUsers() {
-        etudiantArrayList.add(new Etudiant("MA137551", "Zakaria", "Chadli",passwordEncoder.encode("123"), "15132215864", "homme", LocalDate.of(1997, 5, 20), "Kenitra", "zakaria.chadli@gmail.com", "dickhead"));
-        etudiantArrayList.add(new Etudiant("RP137552", "Hamza", "Gueddi",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Salé", "hamza.gueddi@gmail.com", "homo"));
-        etudiantArrayList.add(new Etudiant("CA137553", "Yassine", "Faiq",passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Laayoune", "yassine.faiq@gmail.com", "simp"));
+        etudiantArrayList.add(new Etudiant("MA137551", "Zakaria", "Chadli", passwordEncoder.encode("123"), "15132215864", "homme", LocalDate.of(1997, 5, 20), "Kenitra", "zakaria.chadli@gmail.com", "dickhead"));
+        etudiantArrayList.add(new Etudiant("RP137552", "Hamza", "Gueddi", passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Salé", "hamza.gueddi@gmail.com", "homo"));
+        etudiantArrayList.add(new Etudiant("CA137553", "Yassine", "Faiq", passwordEncoder.encode("123"), "1525486868788", "homme", LocalDate.of(1997, 5, 20), "Laayoune", "yassine.faiq@gmail.com", "simp"));
         etudiantRepository.saveAll(etudiantArrayList);
-        User user  = new User();
+        User user = new User();
         user.setEmail("admin");
         user.setPassword("admin");
         user.setNom("admin");

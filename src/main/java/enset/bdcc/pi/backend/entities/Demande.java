@@ -39,14 +39,14 @@ public abstract class Demande implements Serializable {
     protected String libelle;
     protected String detail;
     protected String type = null;
-
-    @Column(updatable = false,name = "created_at")
+    protected String feedback;
+    protected boolean isSeen = false;
+    @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private Date createdAt; // initialize created date
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt; // initialize updated date
-    protected  boolean isSeen = false;
 
     public Demande(boolean isDone) {
         this.isDone = isDone;

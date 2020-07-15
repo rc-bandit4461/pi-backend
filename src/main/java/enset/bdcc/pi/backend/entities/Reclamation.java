@@ -18,7 +18,6 @@ public class Reclamation extends Demande implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    private String feedback;
 
 
     public Reclamation(String detail) {
